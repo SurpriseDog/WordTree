@@ -86,6 +86,21 @@ def percent(num, digits=0):
         return sig(num * 100, digits) + '%'
 
 
+def undent(text, tab=''):
+    "Remove whitespace at the beginning of lines of text"
+    return '\n'.join([tab + line.lstrip() for line in text.splitlines()])
+
+
+def list_get(lis, index, default=''):
+    "Fetch a value from a list if it exists, otherwise return default"
+
+    length = len(lis)
+    if -length <= index < length:
+        return lis[index]
+    else:
+        return default
+
+
 INF = float("inf")
 
 

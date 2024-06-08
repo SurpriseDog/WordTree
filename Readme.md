@@ -6,15 +6,20 @@
        - Warning! This is a BIG file.
     2. Choose your language and run with: ./wordtree.py --lang (abbreviation) (Language Name)
        - For example to choose French you would run the program with: ./wordtree.py --lang fr French
+    3. Run ./wordtree.py in python. The first run will take many minutes to scan the entire wiktionary dump and process it into a database inside the cache folder. After that, the program will start in a few seconds everytime.
+
+
 
 
 ## Usage:
 
 **Manual Mode**
+
  * You can input individual words by just running ./wordtree.py in the terminal
 
 
-**Input a list of words**
+**Inputing a list of words**
+
  Word lists can be in csv format, text or the My Clippings.txt from kindle E-reader
  * One word per line
  * words cannot have any spaces in them
@@ -49,7 +54,10 @@
 
 ## Data sources:
  **Frequency List**
+
  The frequency lists are from the OpenSubtitle Project: http://opus.nlpl.eu/OpenSubtitles2018.php
+
  Tokenization was done here: https://github.com/hermitdave/FrequencyWords
+
  It's authorized under the CC-by-sa-4.0 license
     I have compressed the 2018 files and removed words with less than 3 hits in the corpus to save space and improve loading times.
