@@ -11,13 +11,13 @@ import json
 import shutil
 import string
 import sqlite3
-# import statistics as stats
+
+from unidecode import unidecode
 import xml.etree.ElementTree as et
 from time import perf_counter as tpc
 
-
-from unidecode import unidecode
-from common import rns, auto_columns, sig
+from sd.common import rns, sig
+from sd.columns import auto_columns
 
 # Punctuation table
 def gen_punct():

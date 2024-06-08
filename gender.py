@@ -11,8 +11,9 @@ import sys
 import sqlite3
 from time import perf_counter as tpc
 
-from easy_args import easy_parse
-from common import rns, percent, auto_columns, undent
+from sd.common import rns, percent
+from sd.easy_args import easy_parse
+from sd.columns import auto_columns, undent
 from tree import make_freq_table, fmt_fpm, loading, print_elapsed
 
 

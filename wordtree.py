@@ -4,11 +4,12 @@ import os
 import re
 import sys
 import csv
+import signal
 
 import myanki
-import signal
-from common import rns, auto_columns
+from sd.common import rns
 from sd.easy_args import ArgMaster
+from sd.columns import auto_columns
 from tree import Tree, make_or_load_json, fmt_fpm, loading, print_elapsed, strip_punct, eprint, show_fpm
 
 
