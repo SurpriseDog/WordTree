@@ -1,11 +1,12 @@
 
 
 ## Install:
- 1. Download the Wiktionary dump and put it in the same directory as ./wordtree.py
+ 1. Download the Wiktionary dump and put it in the same directory as wordtree.py
    - Link: https://dumps.wikimedia.org/enwiktionary/latest/enwiktionary-latest-pages-articles-multistream.xml.bz2
    - Warning! This is a BIG file ≈ 2GB
  2. Choose your language and run with: ./wordtree.py --lang (abbreviation) (Language Name)
-   - For example to choose French you would run the program with: `./wordtree.py --lang fr French`
+   - For example to choose Spanish you would run the program with: `./wordtree.py --lang es Spanish`
+   - The 2 digit lang code must match the language. You can look up additional language codes [here](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes)
    - The first run will take many minutes to scan the entire wiktionary dump and process it into a database inside the cache folder. After that, the program will start in a few seconds everytime.
 
 Note: I have only tested this in Linux. If it breaks in Windows or Mac, give me the error output and I'll try to fix it.
