@@ -22,7 +22,9 @@ In the meantime, here are some common ways to use it:
 **Manual Mode**
 
  * You can input individual words by just running ./wordtree.py in the terminal
- * It will attempt to autocorrect words missing diacritics like convert organico to orgánico or tamano to tamaño.
+ * It will attempt to autocorrect words missing diacritics. For example, it will convert organico to orgánico or tamano to tamaño.
+
+![Example usage](example.png)
 
 
 **Inputing a list of words**
@@ -33,7 +35,7 @@ In the meantime, here are some common ways to use it:
  * It will automatically strip punctuation from any words found. Such as if a word ends in a comma, "quotation mark" or period.
  * I have not tested any other Kindle's format besides my own. Let me know if it works or not for you and what version kindle you have.
 
- Usage: ./wordtree.py (your word_list.txt)
+ Usage: ./wordtree.py your_word_list.txt
 
 
 **Comparing words against anki**
