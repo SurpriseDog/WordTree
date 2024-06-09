@@ -144,7 +144,7 @@ def load_json(filename, ok_missing=False):
 
 def dump_roots(filename, roots):
     with open(filename, 'w') as csv_file:
-        writer = csv.writer(csv_file)
+        writer = csv.writer(csv_file, lineterminator='\n')
         writer.writerows([i[0]] + [y for x in i[1] for y in x] for i in roots.items())
 
 def load_roots(filename):
@@ -195,7 +195,7 @@ def make_word_tree(roots):
 
     for word in roots.keys():
         index += 1
-        if not index % 100000:
+        if not index % 10000:
             print("Building word tree:", rns(index), word + '...')
 
         def recurse(rword, seen=None, level=0):
@@ -478,7 +478,9 @@ class Tree:
             word_tree, reverse_tree = make_word_tree(roots)
 
             if word_tree:
+                print("Writing word tree to .json")
                 dump_json(tree_file, word_tree)
+                print("Writing reverse word tree to .json")
                 dump_json(reverse_file, reverse_tree)
                 meta['tree_finished'] = True
                 dump_json(meta_file, meta)

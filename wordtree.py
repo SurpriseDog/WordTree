@@ -6,15 +6,15 @@ import sys
 import csv
 import signal
 
+if os.name == 'nt' and sys.flags.utf8_mode == 0:
+    print("Windows users must run this program with: python3 -X utf8")
+    sys.exit(1)
+
 import myanki
 from sd.common import rns
 from sd.easy_args import ArgMaster
 from sd.columns import auto_columns
 from tree import Tree, make_or_load_json, fmt_fpm, loading, print_elapsed, strip_punct, eprint, show_fpm
-
-if os.name == 'nt' and sys.flags.utf8_mode == 0:
-    print("Windows users must run this program with: python3 -X utf8")
-    sys.exit(1)
 
 
 def parse_args():
@@ -316,12 +316,12 @@ def output_csv(ranked, tree, args, book_freq):
 
     with open(filename, 'w') as csvfile:
         writer = csv.writer(csvfile)
-        writer.writerow("Word Root FPM Total_FPM Book_Count".split())
+        writer.writerow("Word FPM Total_FPM Book_Count".split())
         for _, word in ranked:
             fpm = tree.get_fpm(word)
             derived, _ = tree.total_freq(word, silent=True, nostars=args.nostars, highstars=args.highstars)
 
-            writer.writerow([word, root, fmt_fpm(fpm), fmt_fpm(derived), book_freq.get(word, 0)])
+            writer.writerow([word, fmt_fpm(fpm), fmt_fpm(derived), book_freq.get(word, 0)])
     return True
 
 
