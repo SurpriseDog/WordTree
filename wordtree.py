@@ -12,6 +12,10 @@ from sd.easy_args import ArgMaster
 from sd.columns import auto_columns
 from tree import Tree, make_or_load_json, fmt_fpm, loading, print_elapsed, strip_punct, eprint, show_fpm
 
+if os.name == 'nt' and sys.flags.utf8_mode == 0:
+    print("Windows users must run this program with: python3 -X utf8")
+    sys.exit(1)
+
 
 def parse_args():
     "Parse arguments"

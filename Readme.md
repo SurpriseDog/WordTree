@@ -13,8 +13,9 @@
 
 
 ** Windows Instructions **
-Windows users will want to open a powershell and type: `python3 ./wordtree.py`
+Windows users will want to open a powershell and type: `python3 -X utf8 ./wordtree.py`
 If you don't have python3 yet, here are installation instructions: https://docs.python.org/3/using/windows.html
+The `-X utf8` is required for Windows if your Python version is under 3.15!
 
 
 Note: I have only throughly tested this in Linux. If it breaks in Windows or Mac, give me the error output and I'll try to fix it.
