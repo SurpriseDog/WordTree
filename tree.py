@@ -12,7 +12,12 @@ import shutil
 import string
 import sqlite3
 
-from unidecode import unidecode
+try:
+    from unidecode import unidecode
+except ModuleNotFoundError:
+    print("Warning! Could not load unidecode module. Spelling correction disabled.")
+    print("\tTo install unidecode, please run: pip install Unidecode\n")
+
 import xml.etree.ElementTree as et
 from time import perf_counter as tpc
 
@@ -170,12 +175,13 @@ def print_elapsed(start, newline=False):
 def make_spellings(words):
     "Make a dict of all words without accents"
     miss = dict()           # dict of misspelled words -> accented orignal
-    for word in words:
-        basic = unidecode(word)
-        if basic != word:
-            if basic not in miss:
-                miss[basic] = []
-            miss[basic].append(word)
+    if 'unidecode' in sys.modules:
+        for word in words:
+            basic = unidecode(word)
+            if basic != word:
+                if basic not in miss:
+                    miss[basic] = []
+                miss[basic].append(word)
     return miss
 
 
