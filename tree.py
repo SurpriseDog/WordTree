@@ -457,7 +457,7 @@ class Tree:
             print("You can change this by running the program with a different --lang setting.")
             print("Use --help for more info.\n")
             print("Building word database in", dbname)
-            print("There should be at least 300 million lines of text to process.")
+            print("There should be at least 300 million lines of xml text to process.")
             print("Please wait a few minutes... You will only have to do this once per language:\n")
             make_data_base(dbname)
             con = sqlite3.connect(dbname)
