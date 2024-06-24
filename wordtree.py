@@ -393,12 +393,14 @@ def print_anki(found):
 
 
 def user_word(text):
-    "Get user input while ignoring ctrl-c"
+    "Get user input while ignoring ctrl-C or Z"
     def interrupt(*_):
         print("\nType q to quit")
     signal.signal(signal.SIGINT, interrupt)     # Catch Ctrl-C
+    signal.signal(signal.SIGTSTP, interrupt)    # Catch Ctrl-Z
     word = input(text)
     signal.signal(signal.SIGINT, lambda *args: sys.exit(1))
+    signal.signal(signal.SIGTSTP, lambda *args: sys.exit(1))
     return word.strip()
 
 
@@ -548,7 +550,6 @@ def main():
 open('warning.txt').readlines()
 
 
-# todo post in sup.dog reddit account
 if __name__ == "__main__":
     os.chdir(sys.path[0])       # change to local dir
     if not os.access('.', os.W_OK):
