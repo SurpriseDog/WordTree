@@ -5,16 +5,17 @@ import re
 import sys
 import csv
 import signal
-
-if os.name == 'nt' and sys.flags.utf8_mode == 0:
-    print("Windows users must run this program with: python3 -X utf8")
-    sys.exit(1)
-
 import myanki
 from sd.common import rns
 from sd.easy_args import ArgMaster
 from sd.columns import auto_columns
 from tree import Tree, make_or_load_json, fmt_fpm, loading, print_elapsed, strip_punct, eprint, show_fpm
+
+
+IS_WINDOWS = bool(os.name == 'nt')
+if IS_WINDOWS and sys.flags.utf8_mode == 0:
+    print("Windows users must run this program with: python3 -X utf8")
+    sys.exit(1)
 
 
 def parse_args():
@@ -47,7 +48,9 @@ def parse_args():
     or simply export the cards you wish to search to a .apkg file (recommended)
     ''',
     ['freq', '', str, ''],
-    "Change the location of the default frequency list. (Must match language with --lang)",
+    '''Change the location of the default frequency list. (Must match language with --lang)
+    This is useful for specifying the Taiwanese or Brazilian version of the language.
+    '''
     ]
 
     input_list = [\
@@ -396,11 +399,15 @@ def user_word(text):
     "Get user input while ignoring ctrl-C or Z"
     def interrupt(*_):
         print("\nType q to quit")
-    signal.signal(signal.SIGINT, interrupt)     # Catch Ctrl-C
-    signal.signal(signal.SIGTSTP, interrupt)    # Catch Ctrl-Z
-    word = input(text)
-    signal.signal(signal.SIGINT, lambda *args: sys.exit(1))
-    signal.signal(signal.SIGTSTP, lambda *args: sys.exit(1))
+
+    if IS_WINDOWS:
+        word = input(text)
+    else:
+        signal.signal(signal.SIGINT, interrupt)     # Catch Ctrl-C
+        signal.signal(signal.SIGTSTP, interrupt)    # Catch Ctrl-Z
+        word = input(text)
+        signal.signal(signal.SIGINT, lambda *args: sys.exit(1))
+        signal.signal(signal.SIGTSTP, lambda *args: sys.exit(1))
     return word.strip()
 
 

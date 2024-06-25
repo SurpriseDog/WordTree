@@ -4,8 +4,8 @@
  1. Download the Wiktionary dump and put it in the same directory as wordtree.py
    - Link: https://dumps.wikimedia.org/enwiktionary/latest/enwiktionary-latest-pages-articles-multistream.xml.bz2
    - Warning! This is a BIG file ≈ 2GB
- 2. Choose your language and run with: ./wordtree.py --lang (abbreviation) (language name)
-   - For example to select Spanish you would run the program with: `./wordtree.py --lang es Spanish`
+ 2. Choose your language and run with: wordtree.py --lang (abbreviation) (language name)
+   - For example to select Spanish you would run the program with: `wordtree.py --lang es Spanish`
    - The 2 digit lang code must match the language. You can look up additional [language codes here](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes)
    - The first run will take many minutes to scan the entire 2 gigabyte Wiktionary dump file and process it into a sqlite3 database inside the cache folder. After that, the program will start in a few seconds every time, unless you run it with a different language code.
 
@@ -13,7 +13,7 @@
 
 **Windows Instructions**
 
-Windows users will want to open a powershell and type: `python3 -X utf8 ./wordtree.py`
+Windows users will want to open a powershell and type: `python3 -X utf8 wordtree.py`
 If you don't have Python3 yet, you can [download it from python.org](https://www.python.org/downloads/windows/)
 The `-X utf8` is required for Windows if your Python version is below [3.15](https://peps.python.org/pep-0686/)!
 
@@ -24,14 +24,14 @@ Note: I have only thoroughly tested this on Linux. If it breaks on Windows or Ma
 
 ## Usage:
 
-Detailed help can be found by running `./wordtree.py --help`
+Detailed help can be found by running `wordtree.py --help`
 
 In the meantime, here are some common ways to use it:
 
 
 **Manual mode**
 
- * You can input individual words by just running ./wordtree.py in the terminal
+ * You can input individual words by just running `wordtree.py` in the terminal
  * It will attempt to autocorrect words missing diacritics. For example, it will convert organico to orgánico or tamano to tamaño. (Requires pip install Unidecode)
 
 ![Example usage](example1.png)
@@ -45,7 +45,7 @@ In the meantime, here are some common ways to use it:
  * Words cannot contain spaces.
  * I have not tested any other Kindle's format besides my own. Let me know if it works or not for you and what version of Kindle you have.
 
- Usage: `./wordtree.py your_word_list.txt`
+ Usage: `wordtree.py your_word_list.txt`
 
 
 
@@ -70,7 +70,7 @@ Usage: `--book bookname.txt`
 Optionally, you can compare the frequency of words against a book.
 
  * This must be a .txt file, not a .mobi, .pdf or any kind of e-reader format.
- * It will automatically strip punctuation from any words found. For exmaple, if a word ends in a comma, "quotation mark" or period.
+ * It will automatically strip punctuation from any words found. For example, if a word ends in a comma, "quotation mark" or period.
 
 
 
@@ -92,7 +92,7 @@ In this example, privado has 3 stars meaning that it's fpm is much too high to b
 
  Control how the output is sorted, set minimum and maximum fpms, output to csv and more.
 
- See additional help by running `./wordtree.py --help`
+ See additional help by running `wordtree.py --help`
 
 
 **Known bugs**
