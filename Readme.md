@@ -107,8 +107,12 @@ Arabic columns are displayed backwards? It seems to work, but I need an Arabic s
 
  **Frequency List**
 
- The frequency lists are from the OpenSubtitle Project: https://opus.nlpl.eu/OpenSubtitles/corpus/version/OpenSubtitles
+ The default subtitle frequency lists are from the OpenSubtitle project: https://opus.nlpl.eu/OpenSubtitles/corpus/version/OpenSubtitles
 
  Tokenization was done here: https://github.com/hermitdave/FrequencyWords
 
  It's authorized under the `CC-by-sa-4.0` license. I have compressed the 2018 files and removed words with less than 3 hits in the corpus to save space and improve loading times.
+
+ The Wikipedia word frequency lists are from this github project: https://github.com/IlyaSemenov/wikipedia-word-frequency
+
+ It's authorized under the `MIT license` license. I have cut short every file that has more than a million lines to save space and improve loading times.

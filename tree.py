@@ -165,11 +165,16 @@ def loading(name, header="Loading", newline=False):
 
 
 def print_elapsed(start, newline=False):
+    end = tpc()
     if newline:
         header = '\tDone in'
     else:
         header = ''
-    eprint(header, rns(tpc() - start, digits=2), 'seconds', flush=True)
+    if end - start < .1:
+        text = ''
+    else:
+        text = rns(end - start, digits=2) + ' seconds'
+    eprint(header, text, flush=True)
 
 
 def make_spellings(words):
@@ -268,7 +273,8 @@ class Tree:
         start = loading("frequency table")
         self.freq, self.freq_total = make_freq_table(freq_file)
         print_elapsed(start)
-        eprint("\tFound", rns(len(self.freq)), 'words in frequency table.')
+        eprint("\tThis table was created by scanning at least", rns(self.freq_total), 'total words.')
+        eprint("\tFound", rns(len(self.freq)), 'unique words in frequency table.')
         eprint("\t1 fpm is equivalent to", int(self.freq_total*1e-6), 'hits in this table.')
 
         start = loading("wikitionary database")

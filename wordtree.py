@@ -50,7 +50,9 @@ def parse_args():
     ['freq', '', str, ''],
     '''Change the location of the default frequency list. (Must match language with --lang)
     This is useful for specifying the Taiwanese or Brazilian version of the language.
-    '''
+    ''',
+    ['wikifreq', '', bool, False],
+    '''Use frequency lists gathered from Wikipedia instead of subtitles. This is useful if you want to focus more on the written word instead of the spoken word.''',
     ]
 
     input_list = [\
@@ -100,7 +102,7 @@ def parse_args():
     ''',
     ['sortfactor', '', float, 0.8],
     '''
-    A higher number biases the algorithm to sorting towards a word's derived fpm.
+    A higher number biases the algorithm to sorting towards a word's total fpm.
     A lower number biases toward the original (input) word's fpm.
     Range 0-1''',
     ]
@@ -145,7 +147,10 @@ def parse_args():
 
     if not args.freq:
         # Determine frequency file if not given
-        args.freq = os.path.join('freq', args.lang[0] + '.xz')
+        if not args.wikifreq:
+            args.freq = os.path.join('freq', args.lang[0] + '.xz')
+        else:
+            args.freq = os.path.join('wikifreq', args.lang[0] + '.xz')
         eprint("Using frequency file:", args.freq)
         if not os.path.exists(args.freq):
             print("No frequency file found for language:", args.lang[0])
@@ -280,7 +285,6 @@ def rank_words(words, tree, args):
     '''Loosely rank a list of words by fpm and derived fpm'''
     ranked = []
     count = 0
-    factor = args.sortfactor
 
     update = int(1e5)
     for word in words:
@@ -293,7 +297,7 @@ def rank_words(words, tree, args):
         # Average the original with the derived fpm so crazy words don't mess up the rankings too much
         fpm = tree.get_fpm(word)
         if fpm:
-            adj = fpm * (derived / fpm)**factor
+            adj = fpm * (derived / fpm)**args.sortfactor
 
             if args.max and derived >= args.max:
                 continue
@@ -559,6 +563,10 @@ open('warning.txt').readlines()
 
 if __name__ == "__main__":
     os.chdir(sys.path[0])       # change to local dir
+    if not '-lang' in ' '.join(sys.argv[:]).lower():
+        print("Language set to default: es Spanish")
+        print("Use --lang to change\n")
+
     if not os.access('.', os.W_OK):
         print("Directory", os.getcwd(), "must be writable to store a cached version of the wikitionary database.")
         sys.exit(1)
