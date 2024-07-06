@@ -550,12 +550,17 @@ def main():
     for line in open('warning.txt').readlines():
         eprint(line.strip())
 
+
+    count = 0
     for _derived, word in ranked:
         root = tree.find_root(word, silent=True)
-        print_info(word, root, margin=5)
-        if word:
-            if not args.noentry:
-                print_entry(root or word, tree)
+        if print_info(word, root, margin=5):
+            count += 1
+            if not count % 10:
+                eprint("Processing word number:", count)
+            if word:
+                if not args.noentry:
+                    print_entry(root or word, tree)
     return True
 
 open('warning.txt').readlines()
