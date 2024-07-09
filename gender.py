@@ -21,6 +21,11 @@ from tree import make_freq_table, fmt_fpm, loading, print_elapsed
 M_SUFFIXES = ('l', 'o', 'n', 'e', 'r', 's')
 F_SUFFIXES = ('d', 'ion', 'ión', 'z', 'a')
 
+IS_WINDOWS = bool(os.name == 'nt')
+if IS_WINDOWS and sys.flags.utf8_mode == 0:
+    print("Windows users must run this program with: python3 -X utf8")
+    sys.exit(1)
+
 
 def parse_args():
     "Parse arguments"
@@ -40,7 +45,7 @@ def parse_args():
 
     description = '''
     Scan the wiktionary database for nouns
-    that don't follow the LONERS or D-ION-Z-A rules.
+    that don't follow the LONERS or D-IÓN-Z-A rules.
     You must first run ./wordtree.py first to build the database.
     '''
 
@@ -91,7 +96,6 @@ def tag_gender(tag):
     '''Get gender for wikitags'''
     gender = re.search('.*es-noun|([^|]*).*}}', tag)
     if not gender:
-        # print("Error getting gender of:", word, line)
         return ''
     gender = gender.group(1)
     return gender
@@ -115,7 +119,6 @@ def loader():
     start = loading("database")
     con = sqlite3.connect(dbname)
     cur = con.cursor()
-    # data = {word:entry for word, entry in cur.execute("SELECT word, entry FROM words").fetchall()}
     data = dict(cur.execute("SELECT word, entry FROM words").fetchall())
     con.close()
     print_elapsed(start)
@@ -188,11 +191,11 @@ def main():
                     out.append((fmt_fpm(fpm), word, ' '.join((assumed, '->', gender))))
                     rogues += 1
 
-    # print_elapsed(start)
+
     print("Processed", rns(wp), "words in", rns(tpc() - start, digits=2), 'seconds')
     print("\n"*3)
     auto_columns(out, space=2, printme=True)
-    print("\nFound", rns(found), 'nouns of which', percent(rogues / found), 'where rogues')
+    print("\nFound", rns(found), 'nouns of which', percent(rogues / found), 'were rogues')
     return True
 
 if __name__ == "__main__":
