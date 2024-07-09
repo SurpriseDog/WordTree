@@ -195,7 +195,7 @@ def main():
     print("Processed", rns(wp), "words in", rns(tpc() - start, digits=2), 'seconds')
     print("\n"*3)
     auto_columns(out, space=2, printme=True)
-    print("\nFound", rns(found), 'nouns of which', percent(rogues / found), 'were rogues')
+    print("\nFound", rns(found), 'nouns of which', percent(rogues / found, digits=2), 'were rogues')
     return True
 
 if __name__ == "__main__":
