@@ -11,9 +11,10 @@ import sys
 import sqlite3
 from time import perf_counter as tpc
 
+from sd.common import undent
 from sd.common import rns, percent
 from sd.easy_args import easy_parse
-from sd.columns import auto_columns, undent
+from sd.columns import auto_columns
 from tree import make_freq_table, fmt_fpm, loading, print_elapsed
 
 
@@ -156,7 +157,7 @@ def main():
             continue
 
         if word in data:
-            if len(word) < args.min:
+            if len(word) < args.length:
                 continue
             entry = data[word].split('\n')
             wp += 1
@@ -183,7 +184,7 @@ def main():
                     assumed = suffix_gender(word)
                     if assumed == '?':
                         continue
-                if assumed != gender:
+                if assumed != gender and assumed != '?':
                     out.append((fmt_fpm(fpm), word, ' '.join((assumed, '->', gender))))
                     rogues += 1
 

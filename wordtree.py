@@ -39,7 +39,7 @@ def parse_args():
     optionals = [\
     ['book', '', str],
     '''Location of a book file to use for additional frequency information.
-    Must be in .txt format, NOT an e-reader format like .mobi
+    Must be in .txt format, NOT an e-reader format like .mobi - You can convert books to .txt format using the open-source Calibre program.
     The more a word appears in the boot, the more it will receive a boost in the adjusted frequency rankings.''',
     ['anki', '', str],
     '''Location of your .anki2 or .apkg file to check to see if the search word already has a note.
@@ -52,7 +52,7 @@ def parse_args():
     This is useful for specifying the Taiwanese or Brazilian version of the language.
     ''',
     ['wikifreq', '', bool, False],
-    '''Use frequency lists gathered from Wikipedia instead of subtitles. This is useful if you want to focus more on the written word instead of the spoken word.''',
+    '''Use frequency lists gathered from Wikipedia instead of subtitles. This is useful if you want to focus more on the written word instead of the spoken word. However, Wikipedia covers academic topics more than you may see in real life depending on what books you read. For example: yacimiento (Mineral Deposit) comes in at 0.87 fpm, but in Wikipedia it's at a staggering 34 fpm.''',
     ]
 
     input_list = [\
@@ -104,7 +104,7 @@ def parse_args():
     '''
     A higher number biases the algorithm to sorting towards a word's total fpm.
     A lower number biases toward the original (input) word's fpm.
-    Range 0-1''',
+    Range: 0-1''',
     ]
 
     hidden = [\
@@ -549,18 +549,21 @@ def main():
     eprint("\n\nDone! Here are the words with definitions.")
     for line in open('warning.txt').readlines():
         eprint(line.strip())
+        eprint("")
 
 
     count = 0
+    eprint("Processing", len(ranked), "words...")
     for _derived, word in ranked:
         root = tree.find_root(word, silent=True)
         if print_info(word, root, margin=5):
-            count += 1
-            if not count % 10:
-                eprint("Processing word number:", count)
             if word:
                 if not args.noentry:
                     print_entry(root or word, tree)
+            count += 1
+            if not count % 100 and len(ranked) >= 200:
+                eprint("Processed word number", count)
+    eprint("Done.")
     return True
 
 open('warning.txt').readlines()
