@@ -167,11 +167,11 @@ def main():
             gender = process_entry(entry)
             if gender:
                 # Is a noun
-                found += 1
                 if 'p' in gender:
                     # No plurals
                     continue
 
+                found += 1
                 if gender in ('?', 'mf'):
                     # skip words we can't determine gender of
                     continue
@@ -187,7 +187,8 @@ def main():
                     assumed = suffix_gender(word)
                     if assumed == '?':
                         continue
-                if assumed != gender and assumed != '?':
+                if (assumed != gender and assumed != '?') or \
+                    (args.ending == 'ma' and word.endswith('ma')):
                     out.append((fmt_fpm(fpm), word, ' '.join((assumed, '->', gender))))
                     rogues += 1
 

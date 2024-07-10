@@ -7,7 +7,7 @@
  2. Choose your language and run with: wordtree.py --lang (abbreviation) (language name)
    - For example to select Spanish you would run the program with: `wordtree.py --lang es Spanish`
    - The 2 digit lang code must match the language. You can look up additional [language codes here](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes)
-   - The first run will take many minutes to scan the entire 2 gigabyte Wiktionary dump file and process it into a sqlite3 database inside the cache folder. After that, the program will start in a few seconds every time, unless you run it with a different language code.
+   - The first run will take many minutes to scan the entire 2 gigabyte Wiktionary dump file and process it into a sqlite3 database inside of the cache folder. After that, the program will start in a few seconds every time, unless you run it with a different language code.
 
 
 
