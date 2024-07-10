@@ -35,11 +35,11 @@ def parse_args():
     '''Limit nouns to only those ending in these letters.
     --ending ma will just show all of them as there is no consistent rule.
     ''',
-    ['min', '', int, 1],
+    ['min', '', float, 1],
     "Minimum fpm to show a word.",
-    ['max', '', int, 0],
+    ['max', '', float, 0],
     "Maximum fpm to show a word.",
-    ['length', '', int, 3],
+    ['length', '', int, 0],
     "Screen out nouns under this length.\nFor example 'la te' is technically a noun meaning the letter t.",
     ]
 
