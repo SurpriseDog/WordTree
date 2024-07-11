@@ -38,14 +38,13 @@ In the meantime, here are some common ways to use it:
 
 
 
-**Inputing a list of words**
+**Inputing a list of words from a file**
+Usage: `wordtree.py your_word_list.txt`
 
- Word lists can be in csv format, text or the "My Clippings.txt" from Kindle E-reader
- * One word per line
+Word lists can be in csv format, text or the "My Clippings.txt" from Kindle E-reader. The easiest way to do this is just a simple text file with one word per line.
  * Words cannot contain spaces.
  * I have not tested any other Kindle's format besides my own. Let me know if it works or not for you and what version of Kindle you have.
 
- Usage: `wordtree.py your_word_list.txt`
 
 
 

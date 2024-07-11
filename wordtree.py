@@ -323,12 +323,13 @@ def output_csv(ranked, tree, args, book_freq):
 
     with open(filename, 'w') as csvfile:
         writer = csv.writer(csvfile)
-        writer.writerow("Word FPM Total_FPM Book_Count".split())
+        writer.writerow("Word Root FPM Total_FPM Book_Count".split())
         for _, word in ranked:
             fpm = tree.get_fpm(word)
+            root = tree.find_root(word, silent=True)
             derived, _ = tree.total_freq(word, silent=True, nostars=args.nostars, highstars=args.highstars)
 
-            writer.writerow([word, fmt_fpm(fpm), fmt_fpm(derived), book_freq.get(word, 0)])
+            writer.writerow([word, root, fmt_fpm(fpm), fmt_fpm(derived), book_freq.get(word, 0)])
     return True
 
 

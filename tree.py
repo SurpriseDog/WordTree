@@ -510,19 +510,17 @@ class Tree:
                     print('\nFound root of', word, '->', ', '.join(roots))
                 if len(roots) == 1:
                     return roots[0]
-                if not silent:
-                    print('\nMultiple possible roots:')
+
+                print('\nMultiple possible roots for:', word)
                 out = []
                 for root in roots:
                     fpm = self.get_fpm(root)
                     out.append((fpm, root))
-                    if not silent:
-                        print(fmt_fpm(fpm), root)
+                    print(fmt_fpm(fpm), root)
 
                 out.sort()
                 root = out[-1][1]
-                if not silent:
-                    print('Chose root:', root)
+                print('Chose root:', root)
                 return root
         return None
 
