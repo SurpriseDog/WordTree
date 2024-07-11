@@ -543,7 +543,7 @@ def main():
     ranked = rank_words(words, tree, args)  # Go through list of words
 
     if args.csv:
-        return output_csv(ranked, tree, args.csv, book_freq)
+        return output_csv(ranked, tree, args, book_freq)
 
 
     eprint("\n\nDone! Here are the words with definitions.")
