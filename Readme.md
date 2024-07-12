@@ -57,12 +57,12 @@ Word lists can be in csv format, text or the "My Clippings.txt" from Kindle E-re
 
 **Comparing words with anki**
 
-Usage: `--anki` and it will attempt to guess the location of your .anki2 file assuming your user profile is 'User 1' or you can type it in manually with `--anki (database location)`
+Usage: `--anki` will attempt to automatically guess the location of your .anki2 file assuming your user profile is 'User 1' - You can also type the location in manually with `--anki (database location)`
 
 
-Checks to see if the words exist in your anki database, and prints matching cards. This is a read only copy of the database and will not change anything. (Sqlite3: '?mode=ro')
+This will check to see if the words exist in your anki database, and prints matching cards. This is a read only copy of the database and will not change anything. (Sqlite3: mode=ro)
 
-I find this useful to make sure I don't try to add the same card twice. The anki database is read in read-only mode. If the database is busy (because you are using the anki app), it will switch to reading a cached version (if available). Closing anki should solve this problem and give you the most up-to-date copy of your cards.
+I find this useful to make sure I don't try to add the same card twice. If the database is busy (because you are using the anki app), it will switch to reading a cached version (if available). Closing anki should solve this problem and give you the most up-to-date copy of your cards.
 
 Here are the locations of the anki databases.
 
