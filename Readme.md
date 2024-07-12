@@ -70,7 +70,7 @@ Here are the locations of the anki databases.
  * MacOS: ~/Library/Application Support/Anki2
  * Linux: ~/.local/share/Anki2
 
-You can also select all of the notes in Anki and `Right click->Notes->Export Notes`. Check the box to support older versions. Save as a .apkg file and open that instead with --anki (your location).apkg
+You can also select all of the notes in Anki and `Right-click->Notes->Export Notes`. Check the box to support older versions. Save as a .apkg file and open that instead with --anki (your location).apkg
 
 
 

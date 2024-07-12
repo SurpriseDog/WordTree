@@ -173,7 +173,7 @@ def guess_anki(path):
         return path     # user defined location
 
     if platform.system() == 'Windows':
-        path = r"%APPDATA%\Anki2"
+        path = os.path.join(os.getenv('APPDATA'), 'Anki2')
     elif platform.system() == 'Linux':
         path = "~/.local/share/Anki2"
     elif platform.system() == 'Darwin':
