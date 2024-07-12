@@ -9,6 +9,7 @@ import shutil
 import sqlite3
 import zipfile
 import hashlib
+import platform
 
 def eprint(*args, **kargs):
     args = list(args)
@@ -59,6 +60,9 @@ def read_database(filename, retries=3):
     else:
         eprint("\nFailed to connect to database.")
         eprint("Make sure the filename is correct or try closing anki before proceeding.")
+
+        if platform.system() == 'Darwin':
+            eprint("If your Mac doesn't let you access the database, try selecting all of the notes in Anki and Right click->Notes->Export Note. Check the box to support older versions. Save as a .apkg file and open that instead with --anki (your location).apkg")
         return None, None, None
 
     con.close()

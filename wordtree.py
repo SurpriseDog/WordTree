@@ -177,7 +177,7 @@ def guess_anki(path):
     elif platform.system() == 'Linux':
         path = "~/.local/share/Anki2"
     elif platform.system() == 'Darwin':
-        path = "~/Library/ApplicationSupport/Anki2"
+        path = "~/Library/Application Support/Anki2"
     else:
         print("Unexpected system platform", platform.system())
         print("Please enter the .anki2 location manually using --anki <location>")
