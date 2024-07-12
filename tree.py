@@ -16,7 +16,7 @@ try:
     from unidecode import unidecode
 except ModuleNotFoundError:
     print("Warning! Could not load unidecode module. Spelling correction disabled.")
-    print("\tTo install unidecode, please run: pip install Unidecode\n")
+    print("\tTo install unidecode, please run: python3 -m pip install unidecode\n")
 
 import xml.etree.ElementTree as et
 from time import perf_counter as tpc
@@ -166,15 +166,19 @@ def loading(name, header="Loading", newline=False):
 
 def print_elapsed(start, newline=False):
     end = tpc()
+
+    # Don't print time for super quick runs
+    if end - start < .1:
+        if newline == False:
+            eprint('')
+        return
+
     if newline:
         header = '\tDone in'
     else:
         header = ''
-    if end - start < .1:
-        text = ''
-    else:
-        text = rns(end - start, digits=2) + ' seconds'
-    eprint(header, text, flush=True)
+
+    eprint(header, rns(end - start, digits=2) + ' seconds', flush=True)
 
 
 def make_spellings(words):

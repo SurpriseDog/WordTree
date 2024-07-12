@@ -5,6 +5,8 @@ import re
 import sys
 import csv
 import signal
+import platform
+
 import myanki
 from sd.common import rns
 from sd.easy_args import ArgMaster
@@ -41,8 +43,8 @@ def parse_args():
     '''Location of a book file to use for additional frequency information.
     Must be in .txt format, NOT an e-reader format like .mobi - You can convert books to .txt format using the open-source Calibre program.
     The more a word appears in the boot, the more it will receive a boost in the adjusted frequency rankings.''',
-    ['anki', '', str],
-    '''Location of your .anki2 or .apkg file to check to see if the search word already has a note.
+    ['anki', '', str, 'USER_DID_NOT_INPUT'],
+    '''Location of your colection.anki2 or .apkg file to check to see if the search word already has a note.
     Only searches the first few words of the front card to avoid any example sentences.
     If you get a 'Database is Locked' error, then you need to close Anki first
     or simply export the cards you wish to search to a .apkg file (recommended)
@@ -111,8 +113,6 @@ def parse_args():
     ['debug', '', bool, False],
     ]
 
-
-
     am = ArgMaster(\
         usage='<txt/csv word list>, --options...',
         description="Scan Wiktionary to determine a word's root and frequency of conjugations in fpm (Frequency per million words)")
@@ -127,6 +127,10 @@ def parse_args():
 
 
     args.lang = [strip_punct(arg.lower().strip()) for arg in args.lang]
+
+
+    # Guess anki location
+    args.anki = guess_anki(args.anki)
 
 
     # Checking
@@ -160,6 +164,36 @@ def parse_args():
         return args
     sys.exit(1)
     return None     # Needed for Pylint
+
+
+def guess_anki(path):
+    if path == 'USER_DID_NOT_INPUT':
+        return None
+    if path:
+        return path     # user defined location
+
+    if platform.system() == 'Windows':
+        path = r"%APPDATA%\Anki2"
+    elif platform.system() == 'Linux':
+        path = "~/.local/share/Anki2"
+    elif platform.system() == 'Darwin':
+        path = "~/Library/ApplicationSupport/Anki2"
+    else:
+        print("Unexpected system platform", platform.system())
+        print("Please enter the .anki2 location manually using --anki <location>")
+        sys.exit(1)
+    path = os.path.expanduser(path)
+    if not os.path.exists(path):
+        print("Could not find directory:", path)
+        print("Please enter the .anki2 location manually using --anki <location>")
+        sys.exit(1)
+    path = os.path.join(path, 'User 1/collection.anki2')
+    if not os.path.exists(path):
+        print("Could not find .anki2 file :", path)
+        print("Please enter the .anki2 location manually using --anki <location>")
+        sys.exit(1)
+    print("Using default anki location:", path)
+    return path
 
 
 def read_clippings(filename, skiplines=0):

@@ -22,6 +22,12 @@ You won't be able to input non-ascii characters like **言葉** in powershell, u
 Note: I have only thoroughly tested this on Linux. If it breaks on Windows or Mac, give me the error output and I'll try to fix it.
 
 
+**Mac Instructions**
+Simply run `python3 wordtree.py`
+  - If you haven't installed python3 yet, mac will prompt you to install it.
+
+
+
 ## Usage:
 
 Detailed help can be found by running `wordtree.py --help`
@@ -32,13 +38,14 @@ In the meantime, here are some common ways to use it:
 **Manual mode**
 
  * You can input individual words by just running `wordtree.py` in the terminal
- * It will attempt to autocorrect words missing diacritics. For example, it will convert organico to orgánico or tamano to tamaño. (Requires pip install Unidecode)
+ * It will attempt to autocorrect words missing diacritics. For example, it will convert organico to orgánico or tamano to tamaño. (Requires: python3 -m pip install unidecode)
 
 ![Example usage](example1.png)
 
 
 
 **Inputing a list of words from a file**
+
 Usage: `wordtree.py your_word_list.txt`
 
 Word lists can be in csv format, text or the "My Clippings.txt" from Kindle E-reader. The easiest way to do this is just a simple text file with one word per line.
@@ -50,9 +57,12 @@ Word lists can be in csv format, text or the "My Clippings.txt" from Kindle E-re
 
 **Comparing words with anki**
 
-Usage: `--anki (database location)`
+Usage: `--anki` and it will attempt to guess the location of your .anki2 file assuming your user profile is 'User 1' or you can type it in manually with `--anki (database location)`
 
-Checks to see if the words exist in your anki database, and prints matching cards. I find this useful to make sure I don't try to add the same card twice. The anki database is read in read-only mode. If the database is busy (because you are using the anki app), it will switch to reading a cached version (if available). Closing anki should solve this problem and give you the most up-to-date copy of your cards.
+
+Checks to see if the words exist in your anki database, and prints matching cards. This is a read only copy of the database and will not change anything. (Sqlite3: '?mode=ro')
+
+I find this useful to make sure I don't try to add the same card twice. The anki database is read in read-only mode. If the database is busy (because you are using the anki app), it will switch to reading a cached version (if available). Closing anki should solve this problem and give you the most up-to-date copy of your cards.
 
 Here are the locations of the anki databases.
 
@@ -114,4 +124,4 @@ Arabic columns are displayed backwards? It seems to work, but I need an Arabic s
 
  The Wikipedia word frequency lists are from this github project: https://github.com/IlyaSemenov/wikipedia-word-frequency
 
- It's authorized under the `MIT license` license. I have cut short every file that has more than a million lines to save space and improve loading times.
+ It's authorized under the `MIT license`. I have cut short every file that has more than a million lines to save space and improve loading times.
