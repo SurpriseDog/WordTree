@@ -19,14 +19,6 @@ The `-X utf8` is required for Windows if your Python version is below [3.15](htt
 
 You won't be able to input non-ascii characters like **言葉** in powershell, until you change the font to "MS Gothic". [Instructions here.](https://learn.microsoft.com/en-us/troubleshoot/windows-server/system-management-components/powershell-console-characters-garbled-for-cjk-languages)
 
-Note: I have only thoroughly tested this on Linux. If it breaks on Windows or Mac, give me the error output and I'll try to fix it.
-
-
-**Mac Instructions**
-Simply run `python3 wordtree.py`
-  - If you haven't installed python3 yet, mac will prompt you to install it.
-
-
 
 ## Usage:
 
@@ -109,8 +101,6 @@ In this example, privado has 3 stars meaning that it's fpm is much too high to b
 **Known bugs**
 
 Arabic columns are displayed backwards? It seems to work, but I need an Arabic speaker/learner to confirm that this output makes sense. Same goes for all other less common languages. I've tested the output in English and Spanish, but I'd appreciate it if other language speakers could tell me if the program works for their language of choice.
-
-
 
 
 

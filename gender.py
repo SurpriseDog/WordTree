@@ -41,6 +41,8 @@ def parse_args():
     "Maximum fpm to show a word.",
     ['length', '', int, 0],
     "Screen out nouns under this length.\nFor example 'la te' is technically a noun meaning the letter t.",
+    ['lang', '', str, 'es'],
+    "2 digit language code.",
     ]
 
     description = '''
@@ -69,8 +71,10 @@ def suffix_gender(word):
     return '?'
 
 
-def process_entry(entry):
+def process_entry(entry, lang):
     "Get the gender from a wiktionary entry."
+    search_term = lang + '-noun'
+
 
     for line in entry:
         line = line.lower().strip()
@@ -84,30 +88,30 @@ def process_entry(entry):
                 print('Malformed line:', line)
                 continue
             tag = code[0]
-            if 'es-noun' in tag:
+            if search_term in tag:
                 gender = code[1].replace('bysense', '')
                 # print(tag, gender, line)
                 return gender
     return ''
 
 
-
+'''
 def tag_gender(tag):
-    '''Get gender for wikitags'''
+    #Get gender for wikitags
     gender = re.search('.*es-noun|([^|]*).*}}', tag)
     if not gender:
         return ''
     gender = gender.group(1)
     return gender
+'''
 
-
-def loader():
+def loader(lang):
     "Load words and entries into memory."
-    dbname = 'cache/es/wiktionary.words.db'
-    freq_file = 'freq/es.xz'
+    dbname = os.path.join('cache', lang, 'wiktionary.words.db')
+    freq_file = os.path.join('freq', lang + '.xz')
 
     if not all(map(os.path.exists, (dbname, freq_file))):
-        print("Missing files. Run ./wordtree.py first")
+        print("Missing cache files. Run wordtree.py on target language first.")
         return None, None, None
 
     start = loading("frequency table")
@@ -137,7 +141,7 @@ def fix_gender(word, gender):
 def main():
     "Find spanish nouns where gender doesn't follow the rules."
     args = parse_args()
-    data, freq_table, total_hits = loader()
+    data, freq_table, total_hits = loader(args.lang)
     if not data:
         return False
 
@@ -164,7 +168,7 @@ def main():
                 continue
             entry = data[word].split('\n')
             wp += 1
-            gender = process_entry(entry)
+            gender = process_entry(entry, args.lang)
             if gender:
                 # Is a noun
                 if 'p' in gender:
@@ -189,7 +193,8 @@ def main():
                         continue
                 if (assumed != gender and assumed != '?') or \
                     (args.ending == 'ma' and word.endswith('ma')):
-                    out.append((fmt_fpm(fpm), word, ' '.join((assumed, '->', gender))))
+                    fpm = rns(fpm, digits=2) if fpm < 10 else int(fpm)
+                    out.append((fpm, word, ' '.join((assumed, '->', gender))))
                     rogues += 1
 
 
