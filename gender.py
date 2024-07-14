@@ -174,8 +174,8 @@ class TriGender:
         associated genders'''
 
         i = -1
-        self.suffixes = []
-        self.genders = []
+        self.suffixes = []      # List of suffixes to try
+        self.genders = []       # and their associated genders
 
         while True:
             i += 1
@@ -215,11 +215,6 @@ def main():
     found = 0       # total nouns found
     rogues = 0      # rogues found
 
-    '''
-    suffix_m = tuple(args.sm)
-    suffix_f = tuple(args.sf)
-    suffix_u = tuple(args.su)
-    '''
     tg = TriGender(args)
 
 
