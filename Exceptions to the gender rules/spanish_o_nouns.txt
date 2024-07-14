@@ -1,9 +1,3 @@
-Fixed malformed gender: alabado 1=m -> m
-Processed 12.7K words in 0.22 seconds
-
-
-
-
 FPM:  Word:      Gender:
 1998  o          m -> f 
 266   mano       m -> f 

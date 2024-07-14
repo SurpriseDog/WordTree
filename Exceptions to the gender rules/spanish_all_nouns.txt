@@ -1,9 +1,3 @@
-Fixed malformed gender: alabado 1=m -> m
-Processed 73.4K words in 1.6 seconds
-
-
-
-
 FPM:   Word:               Gender:
 34231  de                  m -> f 
 21603  la                  f -> m 

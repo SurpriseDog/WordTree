@@ -24,6 +24,10 @@ if IS_WINDOWS and sys.flags.utf8_mode == 0:
     sys.exit(1)
 
 
+def eprint(*args, **kargs):
+    print(*args, file=sys.stderr, **kargs)
+
+
 def parse_args():
     "Parse arguments"
 
@@ -158,9 +162,45 @@ def fix_gender(word, gender):
     if '=' in gender:
         fixed = re.sub(r'[^A-Za-z]', '', gender)
         if len(fixed) == 1:
-            print("Fixed malformed gender:", word, gender, '->', fixed)
+            eprint("Fixed malformed gender:", word, gender, '->', fixed)
             gender = fixed
     return gender
+
+
+class TriGender:
+
+    def __init__(self, args):
+        '''Generate the list of gender suffixes to try and their
+        associated genders'''
+
+        i = -1
+        self.suffixes = []
+        self.genders = []
+
+        while True:
+            i += 1
+            suffix = ''     # word ending
+            for gender in range(3):
+                array = (args.su, args.sf, args.sm)[gender]
+                if i < len(array):
+                    suffix = array[i]
+                    self.suffixes.append(suffix)
+                    self.genders.append(('?', 'f', 'm')[gender])
+            if not suffix:
+                break
+        eprint("Trying suffixes in order:", ", ".join(self.suffixes))
+        # eprint(self.genders)
+
+
+    def classify(self, word):
+        for index, suffix in enumerate(self.suffixes):
+            if word.endswith(suffix):
+                gender = self.genders[index]
+                # print(word, suffix, gender)
+                return gender
+        return '?'
+
+
 
 
 def main():
@@ -175,9 +215,12 @@ def main():
     found = 0       # total nouns found
     rogues = 0      # rogues found
 
+    '''
     suffix_m = tuple(args.sm)
     suffix_f = tuple(args.sf)
     suffix_u = tuple(args.su)
+    '''
+    tg = TriGender(args)
 
 
     start = tpc()
@@ -213,13 +256,14 @@ def main():
                 if len(gender) != 1:
                     gender = fix_gender(word, gender)
                 if len(gender) != 1:
-                    print("Skipped malformed gender:", word, gender)
+                    eprint("Skipped malformed gender:", word, gender)
                     continue
 
                 if word.endswith('ma'):
                     assumed = '?'
                 else:
-                    assumed = suffix_gender(word, suffix_m, suffix_f, suffix_u)
+                    # assumed = suffix_gender(word, suffix_m, suffix_f, suffix_u)
+                    assumed = tg.classify(word)
                     # print(word, assumed)
                     if assumed == '?':
                         continue
@@ -230,8 +274,8 @@ def main():
                     rogues += 1
 
 
-    print("Processed", rns(wp), "words in", rns(tpc() - start, digits=2), 'seconds')
-    print("\n"*3)
+    eprint("Processed", rns(wp), "words in", rns(tpc() - start, digits=2), 'seconds')
+    eprint("\n"*3)
     auto_columns(out, space=2, printme=True)
     if args.ending == 'ma':
         print("\nFound", rns(found), 'nouns')
