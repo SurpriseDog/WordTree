@@ -105,7 +105,7 @@ Arabic columns are displayed backwards? It seems to work, but I need an Arabic s
 
 **Exceptions to the gender rules**
 
-gender.py will search the wiktionary database for nouns that don't follow the expected gender rules of a language. For example, La mano ends in an O, but is a feminine noun. Use `gender.py --help` for more information.
+gender.py will search the wiktionary database for nouns that don't follow the expected gender rules of a language. For example, La mano ends in an O, but is a feminine noun. You can specify any noun suffix for any language. Use `gender.py --help` for more information.
 
 
 ## Data sources:
