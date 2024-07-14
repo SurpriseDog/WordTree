@@ -103,6 +103,10 @@ In this example, privado has 3 stars meaning that it's fpm is much too high to b
 Arabic columns are displayed backwards? It seems to work, but I need an Arabic speaker/learner to confirm that this output makes sense. Same goes for all other less common languages. I've tested the output in English and Spanish, but I'd appreciate it if other language speakers could tell me if the program works for their language of choice.
 
 
+**Exceptions to the gender rules**
+
+gender.py will search the wiktionary database for nouns that don't follow the expected gender rules of a language. For example, La mano ends in an O, but is a feminine noun. Use `gender.py --help` for more information.
+
 
 ## Data sources:
 

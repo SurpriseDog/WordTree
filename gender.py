@@ -18,9 +18,6 @@ from sd.columns import auto_columns
 from tree import make_freq_table, fmt_fpm, loading, print_elapsed
 
 
-M_SUFFIXES = ('l', 'o', 'n', 'e', 'r', 's')
-F_SUFFIXES = ('d', 'ion', 'ión', 'z', 'a')
-
 IS_WINDOWS = bool(os.name == 'nt')
 if IS_WINDOWS and sys.flags.utf8_mode == 0:
     print("Windows users must run this program with: python3 -X utf8")
@@ -43,11 +40,16 @@ def parse_args():
     "Screen out nouns under this length.\nFor example 'la te' is technically a noun meaning the letter t.",
     ['lang', '', str, 'es'],
     "2 digit language code.",
+    ['sm', '', list, ('l', 'o', 'n', 'e', 'r', 's')],
+    "Male suffix list",
+    ['sf', '', list, ('d', 'ion', 'ión', 'z', 'a')],
+    "Female suffix list",
     ]
+
 
     description = '''
     Scan the wiktionary database for nouns
-    that don't follow the LONERS or D-IÓN-Z-A rules.
+    that don't follow the L-O-N-E-R-S or D-IÓN-Z-A rules.
     You must first run ./wordtree.py first to build the database.
     '''
 
@@ -58,15 +60,15 @@ def parse_args():
 
 
 
-def suffix_gender(word):
+def suffix_gender(word, suffix_m, suffix_f):
     "Get gender of word based on suffixes."
     if ' ' in word:
         return '?'
     if word.endswith('ma'):
         return '?'
-    if word.endswith(F_SUFFIXES):
+    if word.endswith(suffix_f):
         return 'f'
-    elif word.endswith(M_SUFFIXES):
+    elif word.endswith(suffix_m):
         return 'm'
     return '?'
 
@@ -149,6 +151,10 @@ def main():
     found = 0       # total nouns found
     rogues = 0      # rogues found
 
+    suffix_m = tuple(args.sm)
+    suffix_f = tuple(args.sf)
+
+
     start = tpc()
     out = [['FPM:', 'Word:', 'Gender:']]
     for word, hits in freq_table:
@@ -188,7 +194,7 @@ def main():
                 if word.endswith('ma'):
                     assumed = '?'
                 else:
-                    assumed = suffix_gender(word)
+                    assumed = suffix_gender(word, suffix_m, suffix_f)
                     if assumed == '?':
                         continue
                 if (assumed != gender and assumed != '?') or \
