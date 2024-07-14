@@ -32,7 +32,7 @@ def parse_args():
     '''Limit nouns to only those ending in these letters.
     --ending ma will just show all of them as there is no consistent rule.
     ''',
-    ['min', '', float, 1],
+    ['min', '', float, 0.1],
     "Minimum fpm to show a word.",
     ['max', '', float, 0],
     "Maximum fpm to show a word.",
@@ -44,6 +44,8 @@ def parse_args():
     "Male suffix list",
     ['sf', '', list, ('d', 'ion', 'ión', 'z', 'a')],
     "Female suffix list",
+    ['su', '', list, ('ma',)],
+    "Unknown suffix list",
     ]
 
 
@@ -60,17 +62,38 @@ def parse_args():
 
 
 
-def suffix_gender(word, suffix_m, suffix_f):
+def suffix_gender(word, suffix_m, suffix_f, suffix_u):
     "Get gender of word based on suffixes."
     if ' ' in word:
         return '?'
-    if word.endswith('ma'):
+
+    '''
+    if word.endswith(suffix_u):
         return '?'
     if word.endswith(suffix_f):
         return 'f'
     elif word.endswith(suffix_m):
         return 'm'
     return '?'
+    '''
+
+    # Step through the arrays u, f, m in turn until a suffix is found or all arrays exhausted
+    i = -1          # index
+    while True:
+        i += 1
+        suffix = ''     # word ending
+        for gender in range(3):
+            array = (suffix_u, suffix_f, suffix_m)[gender]
+            if i < len(array):
+                suffix = array[i]
+                # print('debug', i, gender, suffix)
+                if word.endswith(suffix):
+                    return ('?', 'f', 'm')[gender]
+        if not suffix:
+            # Suffix lists exhausted, reset
+            # print('reset'); input()
+            return '?'
+
 
 
 def process_entry(entry, lang):
@@ -143,6 +166,7 @@ def fix_gender(word, gender):
 def main():
     "Find spanish nouns where gender doesn't follow the rules."
     args = parse_args()
+    os.chdir(sys.path[0])       # change to local dir
     data, freq_table, total_hits = loader(args.lang)
     if not data:
         return False
@@ -153,6 +177,7 @@ def main():
 
     suffix_m = tuple(args.sm)
     suffix_f = tuple(args.sf)
+    suffix_u = tuple(args.su)
 
 
     start = tpc()
@@ -194,7 +219,8 @@ def main():
                 if word.endswith('ma'):
                     assumed = '?'
                 else:
-                    assumed = suffix_gender(word, suffix_m, suffix_f)
+                    assumed = suffix_gender(word, suffix_m, suffix_f, suffix_u)
+                    # print(word, assumed)
                     if assumed == '?':
                         continue
                 if (assumed != gender and assumed != '?') or \

@@ -1,0 +1,34 @@
+Fixed malformed gender: alabado 1=m -> m
+Processed 12.7K words in 0.22 seconds
+
+
+
+
+FPM:  Word:      Gender:
+1998  o          m -> f 
+266   mano       m -> f 
+115   foto       m -> f 
+35    disco      m -> f 
+22    moto       m -> f 
+5     seo        m -> f 
+2.6   quimio     m -> f 
+1.9   ro         m -> f 
+1.1   polio      m -> f 
+0.91  vitro      m -> f 
+0.81  libido     m -> f 
+0.78  marimacho  m -> f 
+0.69  nao        m -> f 
+0.59  expo       m -> f 
+0.43  manito     m -> f 
+0.41  intro      m -> f 
+0.4   seño       m -> f 
+0.34  info       m -> f 
+0.31  furgo      m -> f 
+0.29  ratio      m -> f 
+0.22  bocajarro  m -> f 
+0.22  promo      m -> f 
+0.2   rho        m -> f 
+0.15  autofoto   m -> f 
+0.13  contralto  m -> f 
+
+Found 5K nouns of which 0.5% were rogues
