@@ -4,43 +4,20 @@ import os
 import re
 import sys
 import bz2
-import csv
 import lzma
 import gzip
-import json
 import shutil
-import string
 import sqlite3
-
-try:
-    from unidecode import unidecode
-except ModuleNotFoundError:
-    print("Warning! Could not load unidecode module. Spelling correction disabled.")
-    print("\tTo install unidecode, please run: python3 -m pip install unidecode\n")
 
 import xml.etree.ElementTree as et
 from time import perf_counter as tpc
 
-from sd.common import rns, sig
+from sd.common import rns, sig, rint
 from sd.columns import auto_columns
 
-# Punctuation table
-def gen_punct():
-    punct = str.maketrans(dict.fromkeys(string.punctuation))
-    for letter in "—¡¿":
-        punct[ord(letter)] = None
-    return punct
-
-PUNCT = gen_punct()
-
-
-def eprint(*args, **kargs):
-    print(*args, file=sys.stderr, **kargs)
-
-
-def strip_punct(word):
-    "Strip punctuation and normalize word"
-    return word.lower().strip().translate(PUNCT)
+import storage
+from letters import eprint, make_spellings
+from storage import dump_json, load_json, loading, print_elapsed
 
 
 def strip_tags(text):
@@ -58,6 +35,7 @@ def get_wiktionary_filename():
     if not matches:
         print("Please place a wiktionary dump with a filename similar to:")
         print("\tenwiktionary-20230601-pages-articles-multistream.xml.bz2 in the same directory as the program file.")
+        print("Link: https://dumps.wikimedia.org/enwiktionary/latest/enwiktionary-latest-pages-articles-multistream.xml.bz2") # pylint: disable=line-too-long
         sys.exit(1)
     matches.sort()
     return matches[-1]
@@ -83,31 +61,19 @@ def make_freq_table(filename):
     freq_table = dict()
     for line in f:
         line = line.strip().split()
-        if line:
+        if len(line) >= 2:
             word = line[0]
             if word.startswith('#'):
                 continue
             count = int(line[1].replace(',', ''))
             total += count
             freq_table[word] = count
+        # if not total % 1000:
+        #   print(total)
 
     f.close()
 
     return freq_table, total
-
-
-def make_or_load_json(filename, function, *args):
-    "Load json data set or run function to make it."
-    if not os.path.exists(filename):
-        print("Making", filename + '...')
-        data = function(*args)
-        with open(filename, 'w') as out:
-            json.dump(data, out)
-    else:
-        start = loading(filename)
-        data = json.load(open(filename))
-        print_elapsed(start)
-    return data
 
 
 def make_data_base(dbname):
@@ -122,77 +88,6 @@ def make_data_base(dbname):
     con.commit()
     con.close()
 
-def timeit(func, *args, timeit_txt='Ran function in', **kargs):
-    start = tpc()
-    out = func(*args, **kargs)
-    print(timeit_txt, rns(tpc() - start), 'seconds')
-    return out
-
-
-def dump_json(filename, data):
-    with open(filename, 'w') as f:
-        json.dump(data, f)
-
-def load_json(filename, ok_missing=False):
-    if not os.path.exists(filename):
-        if ok_missing:
-            return dict()
-        else:
-            raise ValueError("Missing file!", filename)
-    with open(filename) as f:
-        return json.load(f)
-
-def dump_roots(filename, roots):
-    with open(filename, 'w') as csv_file:
-        writer = csv.writer(csv_file, lineterminator='\n')
-        writer.writerows([i[0]] + [y for x in i[1] for y in x] for i in roots.items())
-
-def load_roots(filename):
-    out = dict()
-    with open(filename, 'r') as csv_file:
-        for row in csv.reader(csv_file):
-            out[row[0]] = list(zip(*[iter(row[1:])]*2))
-    return out
-
-
-def loading(name, header="Loading", newline=False):
-    if newline:
-        end = '\n'
-    else:
-        end = ' '
-    eprint(header, name + '...', end=end, flush=True)
-    return tpc()
-
-
-def print_elapsed(start, newline=False):
-    end = tpc()
-
-    # Don't print time for super quick runs
-    if end - start < .1:
-        if newline == False:
-            eprint('')
-        return
-
-    if newline:
-        header = '\tDone in'
-    else:
-        header = ''
-
-    eprint(header, rns(end - start, digits=2) + ' seconds', flush=True)
-
-
-def make_spellings(words):
-    "Make a dict of all words without accents"
-    miss = dict()           # dict of misspelled words -> accented orignal
-    if 'unidecode' in sys.modules:
-        for word in words:
-            basic = unidecode(word)
-            if basic != word:
-                if basic not in miss:
-                    miss[basic] = []
-                miss[basic].append(word)
-    return miss
-
 
 
 def make_word_tree(roots):
@@ -205,7 +100,7 @@ def make_word_tree(roots):
     for word in roots.keys():
         index += 1
         if not index % 10000:
-            print("Building word tree:", rns(index), word + '...')
+            print("\n\nBuilding word tree:", rns(index), word)
 
         def recurse(rword, seen=None, level=0):
             '''
@@ -260,11 +155,12 @@ def show_fpm(fpm):
     return (sig(fpm, digits=2) if fpm >= 0.1 else sig(fpm, digits=1)) + ' fpm'
 
 
-
 class Tree:
     '''Load database and word tree derived from wiktionary'''
 
     def __init__(self, freq_file, lang, debug=False):
+        overall_start = tpc()
+
         self.debug = debug
         self.langcode = lang[0].lower()
         self.language = lang[1].title()
@@ -274,12 +170,15 @@ class Tree:
         dbname = os.path.join(self.cache, 'wiktionary.words.db')
         self.word_tree, self.reverse_tree = self.get_word_tree(dbname)
 
+
+        # Can't be threaded because of large data size
         start = loading("frequency table")
         self.freq, self.freq_total = make_freq_table(freq_file)
         print_elapsed(start)
         eprint("\tThis table was created by scanning at least", rns(self.freq_total), 'total words.')
         eprint("\tFound", rns(len(self.freq)), 'unique words in frequency table.')
-        eprint("\t1 fpm is equivalent to", int(self.freq_total*1e-6), 'hits in this table.')
+        eprint("\t1 fpm is equivalent to", rns(self.freq_total*1e-6), 'hits in this table.')
+
 
         start = loading("wikitionary database")
         self._con = sqlite3.connect(dbname)
@@ -292,11 +191,13 @@ class Tree:
         if not os.path.exists(spelling_file):
             self.spellings = make_spellings(self.words)
             dump_json(spelling_file, self.spellings)
-        start = loading("spelling tree")        # todo cache this
-        self.spellings = load_json(spelling_file)
+        start = loading("spelling tree")
+        self.spellings = load_json(spelling_file)   # Seems to be faster directly
 
         print_elapsed(start)
         eprint("Loaded wiktionary database with", rns(len(self.words)), 'words available.')
+        if tpc() - overall_start < 60:
+            print("Total tree class loading time:", rns(tpc() - overall_start), 'seconds')
 
 
     def check_spelling(self, word):
@@ -340,7 +241,7 @@ class Tree:
                 code = code.lower().strip('{{}}').split('|')
                 code = list(filter(None, code))             # Filter blanks in list
                 if not code:
-                    print('Malformed line:', line)
+                    print('Malformed line in text:', line)
                     continue
                 tag = code[0]
                 if tag.endswith(' of'):
@@ -352,7 +253,7 @@ class Tree:
                         continue
                     if self.langcode in code:
                         if len(code) >= 3:
-                            root = code[2]
+                            root = code[2].replace('[', '').replace(']', '')
                         else:
                             print('Cannot process:', code)
                             continue
@@ -365,33 +266,42 @@ class Tree:
         return tags
 
 
-    def make_all_words(self, wiktionary_file, cur, con):
+    def make_all_words(self, dbname):
         "Go through wikitionary articles looking for spanish words and add their data to file."
-        progress = 0
-
-        entry = []              # Entry for a noun
-        all_words = set()       # List of all words
-        flag = False            # Start of Spanish section in each entry
-        out = []                # Output ready to be synced with database
-        found = 0               # Total entries found
+        con = sqlite3.connect(dbname)
+        cur = con.cursor()
+        wiktionary_file = get_wiktionary_filename()
 
         def commit():
             cur.executemany("insert into words (word, entry) values (?, ?)", out)
             con.commit()
 
+        print("Building word database in", dbname)
+        print("Reading from file:", wiktionary_file)
+        # todo update this number from most recent wiki dump
+        expected = 256 * (os.path.getsize(wiktionary_file) / 1000)
+        print("\nThere should be an estimated", rns(expected), "lines of xml text to process.")
+        print("Please wait a few minutes... You will only have to do this once per language:\n")
+
+
+        progress = 0                # Track progress in file
+        update_rate = int(1e6)      # How often to display progress txt
+        root_dict = dict()          # word -> root_entry(word)
+        entry = []                  # Entry for a noun
+        all_words = set()           # List of all words
+        flag = False                # Start of requested language section in each entry
+        out = []                    # Output ready to be synced with database
+        found = 0                   # Total entries found
+        start = tpc()               # Start time
+
 
         # Read the bz2 file and process into sqlite database
-        update_rate = int(1e6)          # How often to display progress txt
-        root_dict = dict()              # word -> root_entry(word)
         with bz2.open(wiktionary_file) as f:
-            start = tpc()
             for line in f:
-                # Track progress in file
                 progress += 1
                 if not progress % update_rate:
-                    print('Reading line number', rns(progress), \
-                          'at rate of', rns(progress / (tpc() - start)), 'lines per second.', \
-                          'Found', rns(found, digits=2), 'entries so far...')
+                    print('Read', rns(progress), 'lines at a rate of', rns(progress / (tpc() - start)), \
+                    'lines per second.', 'Found', rns(found), 'entries so far...')
 
 
                 # Look for title line
@@ -399,53 +309,52 @@ class Tree:
                 if line.startswith("<title>"):
                     if entry:
                         flag = False
-                        word = strip_tags(title_line)
+                        word = strip_tags(title_line).replace('[', '').replace(']', '')
                         if word in all_words:
                             print("Overwriting:", word)
                         else:
                             all_words.add(word)
 
-                        # Append entry to out queue
+                        # Append entry to buffer and sync with database every so many entries
                         found += 1
                         out.append((word, '\n'.join(entry)))
-                        tags = self.root_entry(entry)
-
-
-
                         if len(out) >= 1e5:
                             commit()
                             out = []
 
+                        # Process tags from entry
+                        tags = self.root_entry(entry)
                         if tags:
                             root_dict[word] = tags
 
-
                     # Clear the entry for new title
                     entry = []
-                    title_line = line
+                    title_line = line       # From the last read title
 
-
-                # Only add spanish section to entry
+                # Only add requested language section to entry
                 if flag:
                     if line.startswith('==') and '===' not in line:
                         flag = False
                     else:
                         if not line.startswith('<'):
                             entry.append(line)
-
                 else:
-                    # Spanish section
                     if '==' + self.language + '==' in line:
                         flag = True
 
         commit()
+        con.close()
+        print("Read", f"{progress:,}", "lines in", rns((tpc() - start) / 60), 'minutes')
+        print("Averaged", rint(progress / (os.path.getsize(wiktionary_file) / 1000)), 'lines per KB')
+
         return root_dict
+
 
     def get_word_tree(self, dbname):
         #  Cache Files
         meta_file = os.path.join(self.cache, 'meta.json')
         tree_file = os.path.join(self.cache, 'tree.json')
-        roots_file = os.path.join(self.cache, 'roots.csv')
+        roots_file = os.path.join(self.cache, 'roots.json')
         reverse_file = os.path.join(self.cache, 'reverse.json')
 
 
@@ -459,49 +368,59 @@ class Tree:
 
         # Create sqlite database for words from wiktionary
         if not meta['words_finished']:
-            if shutil.disk_usage(self.cache).free < 900e6:
+
+            # Current "en" folder is 751 MB so I'm setting a minimum HDD space of a gig
+            if shutil.disk_usage(self.cache).free < 1e9:
                 print("You should probably clear up some hard drive space before running this.")
                 sys.exit(1)
 
             print("\nThe current language is set to:", self.langcode, self.language)
             print("You can change this by running the program with a different --lang setting.")
             print("Use --help for more info.\n")
-            print("Building word database in", dbname)
-            print("There should be at least 300 million lines of xml text to process.")
-            print("Please wait a few minutes... You will only have to do this once per language:\n")
+
             make_data_base(dbname)
-            con = sqlite3.connect(dbname)
-            cur = con.cursor()
-            roots = self.make_all_words(get_wiktionary_filename(), cur, con)
-            con.close()
+            roots = self.make_all_words(dbname)
 
             # Save roots to file
-            # todo convert to csv for speed
-            dump_roots(roots_file, roots)
+            dump_json(roots_file, roots)
             meta['words_finished'] = True
             dump_json(meta_file, meta)
 
 
         # Make the word tree associating words and roots
         if not meta['tree_finished'] or self.debug >= 3:
-            roots = load_roots(roots_file)
-
+            roots = load_json(roots_file)
             word_tree, reverse_tree = make_word_tree(roots)
 
             if word_tree:
+                # todo write tree_file directly to csv directly after testing
                 print("Writing word tree to .json")
                 dump_json(tree_file, word_tree)
                 print("Writing reverse word tree to .json")
                 dump_json(reverse_file, reverse_tree)
                 meta['tree_finished'] = True
                 dump_json(meta_file, meta)
+            else:
+                eprint('''
+            The word tree is empty.
+            Double check that the --lang arguments were correct before deleting the cache folder
+            and trying again. Sometimes languages are labelled differently in Wiktionary.
+            For example: the Bosnian language is under the label: Serbo-Croatian with the code sh
+            So to look for Bosnian words using the Bosnian frequency table,
+            I would have to run: --lang sh Serbo-Croatian --freq freq/bn.xz
+                ''')
+                sys.exit(1)
 
 
         # Load word tree
         start = loading("word tree")
-        word_tree = load_json(tree_file)
+        word_tree = storage.convert_and_load(tree_file, chunk=3, use_json=False)
+        print_elapsed(start)
+
+        start = loading("reverse tree")
         reverse_tree = load_json(reverse_file)
         print_elapsed(start)
+
         return word_tree, reverse_tree
 
     def find_root(self, word, silent=False):
@@ -560,7 +479,7 @@ class Tree:
 
 
     def total_freq(self, word, branch=None, silent=False, threshold=0.05, \
-        book=None, nostars=False, highstars=8):
+        book=None, nostars=True, highstars=8):
         "Look up any word and return fpm of all conjugations combined."
         root = self.find_root(word, silent=True) or word
 
@@ -569,15 +488,20 @@ class Tree:
         high_total = 0      # Total of words with *
         skipped = 0         # Number of words with hits below threshold
 
-        found = set()       # List of subs found
+        found = set()       # List of subs found (and added to the total_hits)
         subs = self.word_tree.get(root, []).copy()
-        subs.append([root, '', ''])
+        subs.append((root, '', ''))
         subs.sort()
+
+        # print('subs', subs)
+        # print('word', word, 'branch', branch)
 
         # Count up hits in frequency table
         all_hits = {sub:self.get_fpm(sub) for sub, _, _ in subs}
         total_hits = 0
         baseline = self.calc_baseline(root, word, branch, silent=silent)
+
+        # print(all_hits, total_hits)
 
         out = [['Conj:', 'FPM:', '', "Wikitags:"]]
         if book:
@@ -595,8 +519,8 @@ class Tree:
                     # Match only words with tag linking back to branch
                     if subroot == branch or sub == branch:  # pylint:disable=consider-using-in
                         total_hits += hits
-                    else:
                         found.add(sub)
+                    else:
                         continue
                 else:
                     total_hits += hits
@@ -612,7 +536,6 @@ class Tree:
                 if hits < threshold:
                     if sub not in found:
                         skipped += 1
-                    found.add(sub)
                     continue
 
             # Append tags only for duplicate subs
@@ -642,8 +565,11 @@ class Tree:
             auto_columns(out, space=2, printme=True)
             if skipped:
                 print("(skipped showing", skipped, 'conjugations below threshold)')
-            if high_total and not nostars:
-                print("(total without abnormally high * words is", str(fmt_fpm(total_hits - high_total)) + ')')
+            if high_total:
+                if nostars:
+                    print("Total with stars words would have been:", fmt_fpm(total_hits + high_total), 'fpm')
+                else:
+                    print("(total without abnormally high * words is", str(fmt_fpm(total_hits - high_total)) + ')')
 
         return total_hits, book_total
 

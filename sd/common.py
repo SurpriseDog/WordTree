@@ -3,11 +3,16 @@
 # To see how this file was created visit: https://github.com/SurpriseDog/Star-Wrangler
 
 
+def rint(num):
+    return str(int(round(num)))
+
+
 def sig(num, digits=3, trailing=False):
     # post to https://stackoverflow.com/questions/658763/how-to-suppress-scientific-notation-when-printing-float-values
     '''Return number formatted for significant digits
     trailing = True will enable trailing zeroes
     '''
+    # print('debug', trailing, num)
     num = float(num)
     if num == 0:
         if trailing:
@@ -22,7 +27,10 @@ def sig(num, digits=3, trailing=False):
         return out
 
     # Use the g method if possible, but fails for small numbers
-    out = ('{0:.' + str(digits) + 'g}').format(num)
+    if num < 1:
+        out = ('{0:.' + str(digits+1) + 'g}').format(num)
+    else:
+        out = ('{0:.' + str(digits) + 'g}').format(num)
     if 'e' not in out:
         if '.' in out:
             return out.rstrip('0.') if not trailing else out
@@ -36,7 +44,7 @@ def sig(num, digits=3, trailing=False):
     return out.rstrip('0.') if not trailing else out
 
 
-def rfs(num, mult=1000, digits=3, order=' KMGTPEZYB', suffix='B', space=' ', fixed=None):
+def rfs(num, mult=1000, digits=2, order=' KMGTPEZYB', suffix='B', space=' ', fixed=None, trailing=False,):
     '''A "readable" file size
     mult is the value of a kilobyte in the filesystem. (1000 or 1024)
     order is the name of each level
@@ -45,7 +53,7 @@ def rfs(num, mult=1000, digits=3, order=' KMGTPEZYB', suffix='B', space=' ', fix
     space is the space between '3.14 M' for 3.14 Megabytes
     '''
     if abs(num) < mult:
-        return sig(num, digits) + space + suffix
+        return sig(num, digits, trailing) + space + suffix
 
     # Let's Learn about BrontoBytes
     # Comment this out when BrontoBytes become mainstream
@@ -67,7 +75,7 @@ def rfs(num, mult=1000, digits=3, order=' KMGTPEZYB', suffix='B', space=' ', fix
             if fixed:
                 num = ('{0:.' + str(fixed) + 'f}').format(num / magnitude)
             else:
-                num = sig(num / magnitude, digits)
+                num = sig(num / magnitude, digits, trailing)
             return num + space + (order[x] + suffix).rstrip()
     return str(num) + suffix        # Never called, but needed for pylint
 

@@ -44,9 +44,14 @@ def parse_args():
     "Screen out nouns under this length.\nFor example 'la te' is technically a noun meaning the letter t.",
     ['lang', '', str, 'es'],
     "2 digit language code.",
+    ['listall', '', bool, False],
+    "List all nouns, not just the rogues.",
+    ['hideunknown', '', bool, False],
+    "Hide nouns with unknown gender: ?",
     ['sm', '', list, ('l', 'o', 'n', 'e', 'r', 's')],
     "Male suffix list",
-    ['sf', '', list, ('d', 'ion', 'ión', 'z', 'a')],
+    ['sf', '', list, ('d', 'ión', 'z', 'a')],
+    # all 4 nouns ending in ion (no accent) are masculine
     "Female suffix list",
     ['su', '', list, ('ma',)],
     "Unknown suffix list",
@@ -173,10 +178,10 @@ class TriGender:
         '''Generate the list of gender suffixes to try and their
         associated genders'''
 
-        i = -1
         self.suffixes = []      # List of suffixes to try
         self.genders = []       # and their associated genders
 
+        i = -1
         while True:
             i += 1
             suffix = ''     # word ending
@@ -254,19 +259,19 @@ def main():
                     eprint("Skipped malformed gender:", word, gender)
                     continue
 
-                if word.endswith('ma'):
-                    assumed = '?'
-                else:
-                    # assumed = suffix_gender(word, suffix_m, suffix_f, suffix_u)
-                    assumed = tg.classify(word)
-                    # print(word, assumed)
-                    if assumed == '?':
-                        continue
-                if (assumed != gender and assumed != '?') or \
-                    (args.ending == 'ma' and word.endswith('ma')):
-                    fpm = rns(fpm, digits=2) if fpm < 10 else int(fpm)
-                    out.append((fpm, word, ' '.join((assumed, '->', gender))))
-                    rogues += 1
+                assumed = tg.classify(word)
+
+                if args.listall:
+                    fpm = rns(fpm, digits=1) if fpm < 10 else int(fpm)
+                    out.append((fpm, word, gender))
+                    continue
+                if assumed == gender:
+                    continue
+                if assumed == '?' and args.hideunknown:
+                    continue
+                fpm = rns(fpm, digits=2, trailing=True) if fpm < 10 else int(fpm)
+                out.append((fpm, word, ' '.join((assumed, '->', gender))))
+                rogues += 1
 
 
     eprint("Processed", rns(wp), "words in", rns(tpc() - start, digits=2), 'seconds')

@@ -13,9 +13,7 @@
 
 **Windows Instructions**
 
-Windows users will want to open a powershell and type: `python3 -X utf8 wordtree.py`
-If you don't have Python3 yet, you can [download it from python.org](https://www.python.org/downloads/windows/)
-The `-X utf8` is required for Windows if your Python version is below [3.15](https://peps.python.org/pep-0686/)!
+Windows users will want to open a powershell and type: `python3 -X utf8 wordtree.py` (Make sure to capitalize the X) If you don't have Python3 yet, you can [download it from python.org](https://www.python.org/downloads/windows/) The `-X utf8` is required for Windows if your Python version is below [3.15](https://peps.python.org/pep-0686/)!
 
 You won't be able to input non-ascii characters like **言葉** in powershell, until you change the font to "MS Gothic". [Instructions here.](https://learn.microsoft.com/en-us/troubleshoot/windows-server/system-management-components/powershell-console-characters-garbled-for-cjk-languages)
 
@@ -107,7 +105,7 @@ Arabic columns are displayed backwards? It seems to work, but I need an Arabic s
 
 gender.py searches the Wiktionary database for nouns that don't follow the expected gender rules of a language. For example, La mano ends in an `o`, but is a feminine noun. You can specify any noun suffix for any language.
 
-The program will try each suffix in turn so it will try `ion` = female, before trying `n` = male, because `ion` is listed in the second position of d-ion-z-a while `n` is in the third position of l-o-n-e-r-s.
+The program will try each suffix in turn so it will try `ión` = female, before trying `n` = male, because `ión` is listed in the second position of d-ión-z-a while `n` is in the third position of l-o-n-e-r-s.
 
 Use `gender.py --help` for more information.
 

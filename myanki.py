@@ -18,9 +18,9 @@ def eprint(*args, **kargs):
     print(*args, file=sys.stderr, **kargs)
 
 
-def sanitize(s, bits=128):
+def sanitize(string, bits=128):
     "Turn a string into a valid filename."
-    return hashlib.sha512(s.encode()).hexdigest()[:(bits//4)]
+    return hashlib.sha512(string.encode()).hexdigest()[:(bits//4)]
 
 
 def read_database(filename, retries=3):
@@ -102,6 +102,7 @@ def getnotes(filename):
             if os.path.exists(cached):
                 eprint("Using cached anki database:", cached)
                 notes, cards, decks = read_database(cached, retries=0)
+                time.sleep(1)
             else:
                 sys.exit(1)
 
@@ -129,7 +130,7 @@ def getnotes(filename):
         # process fld to split into question, answer and minor txt processing
         out = dict()
         line = flds.split('\x1f')
-        out['question'] = line[0].replace('&nbsp;', ' ').replace('<br>', '\n')
+        out['question'] = line[0]
         out['ans'] = line[1]
         out['fields'] = line
         out['mid'] = mid

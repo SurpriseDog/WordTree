@@ -1,0 +1,5 @@
+Thank you for using WordTree.
+
+This software will always be 100% free and open source. Please leave a star on the GitHub and spread the word so more people can find this program.
+
+https://github.com/SurpriseDog/WordTree

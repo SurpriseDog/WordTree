@@ -4,196 +4,24 @@ import os
 import re
 import sys
 import csv
+import time
 import signal
-import platform
+from time import perf_counter as tpc
+
 
 import myanki
 from sd.common import rns
-from sd.easy_args import ArgMaster
 from sd.columns import auto_columns
-from tree import Tree, make_or_load_json, fmt_fpm, loading, print_elapsed, strip_punct, eprint, show_fpm
+from args import parse_args
+from letters import strip_punct, COMMON_SYMBOLS, eprint
+from tree import Tree, fmt_fpm, loading, show_fpm
+from storage import make_or_load_json, dump_json
 
 
 IS_WINDOWS = bool(os.name == 'nt')
 if IS_WINDOWS and sys.flags.utf8_mode == 0:
     print("Windows users must run this program with: python3 -X utf8")
     sys.exit(1)
-
-
-def parse_args():
-    "Parse arguments"
-
-    positionals = [\
-    ["filename", '', str],
-    '''.txt, .csv or kindle My Clippings.txt file to read list of words from.
-    Put a # before any lines you want to ignore.
-    Right now only single words are supported.
-    If multiple words are given on a line only the first word will be processed unless the file is My Clippings.txt'''
-    ]
-
-    language = [\
-    ['lang', '', list, ('es', 'Spanish')],
-    '''Language code and name. Example: --lang en English
-    Go to https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes to look up your language code.
-    ''',
-    ]
-
-    optionals = [\
-    ['book', '', str],
-    '''Location of a book file to use for additional frequency information.
-    Must be in .txt format, NOT an e-reader format like .mobi - You can convert books to .txt format using the open-source Calibre program.
-    The more a word appears in the boot, the more it will receive a boost in the adjusted frequency rankings.''',
-    ['anki', '', str, 'USER_DID_NOT_INPUT'],
-    '''Location of your colection.anki2 or .apkg file to check to see if the search word already has a note.
-    Only searches the first few words of the front card to avoid any example sentences.
-    If you get a 'Database is Locked' error, then you need to close Anki first
-    or simply export the cards you wish to search to a .apkg file (recommended)
-    ''',
-    ['freq', '', str, ''],
-    '''Change the location of the default frequency list. (Must match language with --lang)
-    This is useful for specifying the Taiwanese or Brazilian version of the language.
-    ''',
-    ['wikifreq', '', bool, False],
-    '''Use frequency lists gathered from Wikipedia instead of subtitles. This is useful if you want to focus more on the written word instead of the spoken word. However, Wikipedia covers academic topics more than you may see in real life depending on what books you read. For example: yacimiento (Mineral Deposit) comes in at 0.87 fpm, but in Wikipedia it's at a staggering 34 fpm.''',
-    ]
-
-    input_list = [\
-    ['ignore', '', str],
-    "Ignore words on this list.\nEach word on the ignore list cancels out one word on the word list.",
-    "Debugging mode.",
-    ['wikiroots', '', bool, False],
-    "Why supply your own word list when you can rank every single root word in the dictionary?",
-    ['wikiwords', '', bool, False],
-    "Show every word in the dictionary.\n(This will take awhile unless you combine it with --csv)",
-    ['skiplines', '', int, 0],
-    "Skip lines at start of words list. (Helpful if you want to resume a session later)",
-    ]
-
-    display = [\
-    ['csv', '', str],
-    "Output data as csv filename instead of displaying. Example: --csv output.csv",
-    ['skipanki', '', bool],
-    "Skip any cards that already in anki database instead of just noting them.\nMust combine with --anki",
-    ['min', '', float, 0],
-    "Minimum total fpm to show a word candidate (not adjusted)",
-    ['max', '', float, 0],
-    "Maximum total fpm to show a word. (useful for filtering out super common words like: the)",
-    ['length', '', int, 2],
-    "Skip words under given length.",
-    ['nostars', '', bool, False],
-    "Don't consider abnormally high star words when sorting or displaying",
-    ['highstars', '', int, 5],
-    "Ratio of a conjugated word's fpm to the baseline to mark it with a star.",
-    ['noentry', '', bool, False],
-    "Don't display the Wiktionary entry for each word",
-    ['threshold', '', float, 0.05],
-    "Lowest fpm to still display a conjugation.\n--threshold 0.05 = (1 in 20 million words)",
-    # At 250 words per minute for 4 hours a day, it would take around 333 days to come across a word at threshold
-    # For a 1 fpm word, it would take 66 hours or 16+ days on average
-    # For a .2 fpm word, it would take 83+ days
-    # Words I look up in my native language are usually at around 0 to 0.3 fpm
-    ]
-
-
-    sorting = [\
-    ['reverse', '', bool],
-    "Reverse the word list",
-    ['sort', '', bool],
-    '''Loosely sorts the words from highest fpm to lowest
-    applying a formula based on the original word's fpm and it's total derived fpm.
-    ''',
-    ['sortfactor', '', float, 0.8],
-    '''
-    A higher number biases the algorithm to sorting towards a word's total fpm.
-    A lower number biases toward the original (input) word's fpm.
-    Range: 0-1''',
-    ]
-
-    hidden = [\
-    ['debug', '', bool, False],
-    ]
-
-    am = ArgMaster(\
-        usage='<txt/csv word list>, --options...',
-        description="Scan Wiktionary to determine a word's root and frequency of conjugations in fpm (Frequency per million words)")
-    am.update(language, title="Language:")
-    am.update(optionals, title="Optional arguments:")
-    am.update(input_list, title="Input word list:\n(These options control how the optional input word list is processed.)")
-    am.update(sorting, title="Sorting:")
-    am.update(display, title="Which words to display:")
-    am.update(positionals, title="Positional Arguments", positionals=True, hidden=True)
-    am.update(hidden, "Used for testing purposes:", hidden=True)
-    args = am.parse()
-
-
-    args.lang = [strip_punct(arg.lower().strip()) for arg in args.lang]
-
-
-    # Guess anki location
-    args.anki = guess_anki(args.anki)
-
-
-    # Checking
-    status = False
-    if args.filename and not os.path.exists(args.filename):
-        print("Can't find file named:", args.filename)
-    elif args.freq and not os.path.exists(args.freq):
-        print("Can't find file:", args.freq)
-    elif len(args.lang) != 2:
-        print("Please enter the language in the format:", '--lang <code> <Name>')
-        print("For example: --lang es spanish")
-    elif len(args.lang[0]) != 2:
-        print("Language codes must be 2 digits long")
-    elif not 0 <= args.sortfactor <= 1:
-        print("Sort factor must be between 0 and 1")
-    else:
-        status = True
-
-    if not args.freq:
-        # Determine frequency file if not given
-        if not args.wikifreq:
-            args.freq = os.path.join('freq', args.lang[0] + '.xz')
-        else:
-            args.freq = os.path.join('wikifreq', args.lang[0] + '.xz')
-        eprint("Using frequency file:", args.freq)
-        if not os.path.exists(args.freq):
-            print("No frequency file found for language:", args.lang[0])
-            status = False
-
-    if status:
-        return args
-    sys.exit(1)
-    return None     # Needed for Pylint
-
-
-def guess_anki(path):
-    if path == 'USER_DID_NOT_INPUT':
-        return None
-    if path:
-        return path     # user defined location
-
-    if platform.system() == 'Windows':
-        path = os.path.join(os.getenv('APPDATA'), 'Anki2')
-    elif platform.system() == 'Linux':
-        path = "~/.local/share/Anki2"
-    elif platform.system() == 'Darwin':
-        path = "~/Library/Application Support/Anki2"
-    else:
-        print("Unexpected system platform", platform.system())
-        print("Please enter the .anki2 location manually using --anki <location>")
-        sys.exit(1)
-    path = os.path.expanduser(path)
-    if not os.path.exists(path):
-        print("Could not find directory:", path)
-        print("Please enter the .anki2 location manually using --anki <location>")
-        sys.exit(1)
-    path = os.path.join(path, 'User 1/collection.anki2')
-    if not os.path.exists(path):
-        print("Could not find .anki2 file :", path)
-        print("Please enter the .anki2 location manually using --anki <location>")
-        sys.exit(1)
-    print("Using default anki location:", path)
-    return path
 
 
 def read_clippings(filename, skiplines=0):
@@ -241,40 +69,75 @@ def read_clippings(filename, skiplines=0):
 
 
 
+def detect_book(filename):
+    "Count up how many words per line in text and determine if it should be read like a book or a list"
+    wpl = []        # words per line
+    with open(filename) as f:
+        for line in f:
+            line = line.split()
+            wc = 0              # word count per line
+            for word in line:
+                # eprint(wc, word)
+                if word.startswith('#'):
+                    break
+                wc += 1
+
+            if wc:
+                wpl.append(wc)
+                # eprint(len(wpl), wc, line)
+                if len(wpl) >= 2100:
+                    # Sample error rate approaching 2%
+                    break
 
 
-def get_words(filename, short_len, skiplines=0):
-    '''Read csv, txt or kindle clippings.txt'''
+    # chop off the first few dozen lines of book to avoid counting up non-prose intro
+    # eprint(wpl)
+    if len(wpl) >= 400:
+        wpl = wpl[100:]
+    wpl = sum(wpl) / len(wpl) if wpl else 0
+    eprint("Detected an average of", int(round(wpl, 0)), "words per line from input file.")
+    if wpl >= 16:
+        return True
+    return False
+
+
+
+def get_words(filename, short_len, skiplines=0, multiline=-1):
+    '''Read csv, txt or kindle clippings.txt
+    multiline = 1 # True: Read many words per line
+    multiline = 0 # False: Read one word per line
+    multiline = -1 # Autodetect
+    '''
     words = []
-    duplicates = dict()         # Count of duplicates word->count
+    book_mode = False           # Read multiple words per line
+
 
     def add_word(word):
-        '''add word to table if checks pass and count up duplicates'''
-        nonlocal words, duplicates
+        '''add word to table'''
+        nonlocal words
         if word and not word.startswith('#'):
             word = strip_punct(word)
             if not word.strip():
                 pass
-            elif len(word) <= short_len:
+            elif not book_mode and len(word) <= short_len:
                 print('Skipping short word:', word)
-            elif word in words:
-                duplicates[word] = duplicates.get(word, 0) + 1
             else:
                 words.append(word)
 
     if not os.path.exists(filename):
         print("Filename does not exist!:", filename)
         return False
-    count = 0
+
 
     # Try to read file as my clippings.txt first
     rc = read_clippings(filename, skiplines=skiplines)
     if rc:
         for word in rc:
             add_word(word)
-        return words, duplicates
+        return words
 
 
+    count = 0
     with open(filename) as f:
         if filename.lower().endswith('.csv'):
             eprint("Reading input file as csv:", filename)
@@ -286,8 +149,17 @@ def get_words(filename, short_len, skiplines=0):
                 word = line[0].strip().lower()
                 add_word(word)
 
+        elif multiline >= 1 or (multiline == -1 and detect_book(filename)):
+            eprint("Reading input file as book (many words per line):", filename)
+            book_mode = True
+            for line in f:
+                for word in line.split():
+                    count += 1
+                    word = word.strip().lower()
+                    if word:
+                        add_word(word)
         else:
-            eprint("Reading input file as txt:", filename)
+            eprint("Reading input file as txt (one word per line):", filename)
             for line in f:
                 count += 1
                 if count <= skiplines:
@@ -296,7 +168,10 @@ def get_words(filename, short_len, skiplines=0):
                 if line:
                     word = line.split()[0].strip().lower()
                     add_word(word)
-    return words, duplicates
+
+
+    # eprint("Found:", len(words), "unique words")
+    return words
 
 
 def get_freq_table(filename):
@@ -315,86 +190,78 @@ def get_freq_table(filename):
     return freq
 
 
-def rank_words(words, tree, args):
-    '''Loosely rank a list of words by fpm and derived fpm'''
-    ranked = []
-    count = 0
-
-    update = int(1e5)
-    for word in words:
-        count += 1
-        if not count % update:
-            print(rns(count))
-
-        derived, _ = tree.total_freq(word, silent=True, nostars=args.nostars, highstars=args.highstars)
-
-        # Average the original with the derived fpm so crazy words don't mess up the rankings too much
-        fpm = tree.get_fpm(word)
-        if fpm:
-            adj = fpm * (derived / fpm)**args.sortfactor
-
-            if args.max and derived >= args.max:
-                continue
-
-            if derived >= args.min:
-                # print('debug', derived, word)
-                ranked.append((adj, word))
-
-    if args.sort:
-        ranked.sort(reverse=True)
-    if args.reverse:
-        ranked.reverse()
-    if count >= update:
-        eprint("Done!")
-
-    return ranked
-
-
-def output_csv(ranked, tree, args, book_freq):
-    '''Ouput words as csv file.'''
-    filename = args.csv
-
-    with open(filename, 'w') as csvfile:
-        writer = csv.writer(csvfile)
-        writer.writerow("Word Root FPM Total_FPM Book_Count".split())
-        for _, word in ranked:
-            fpm = tree.get_fpm(word)
-            root = tree.find_root(word, silent=False) or word
-            derived, _ = tree.total_freq(word, silent=True, nostars=args.nostars, highstars=args.highstars)
-
-            writer.writerow([word, root, fmt_fpm(fpm), fmt_fpm(derived), book_freq.get(word, 0)])
-    eprint("Writing csv file:", filename)
-    return True
-
-
-def print_entry(word, tree):
-    entry = tree.get_entry(word)
-    if entry:
-        print("\nWiktionary entry for:", word)
-        print(entry)
-
-
-
-def load_anki(filename, limit):
+def load_anki(args):
     '''
-    Get existing anki cards and make a searchable dict
-    limit = number of words to search at start of card
+    Get existing anki cards and make a searchable dict of Question words->Matching Notes
     '''
     anki = dict()
-    start = loading("anki database", newline=True)
-    notes = myanki.getnotes(filename).values()
-    print_elapsed(start, newline=True)
+    loading("anki database", newline=True)
+    notes = myanki.getnotes(args.anki)
+    # print_elapsed(start, newline=True)
     eprint("\tFound", rns(len(notes)), 'notes.')
+    decks = tuple(args.decks)   # Which deck's words to include.
+    limit = args.ankilimit      # Number of words to search at start of card
+    count = 0
 
-    # Make dict of searchable to questions
-    for note in notes:
-        q = re.sub('<[^<]+>', '', note['question'])     # try to strip out any xml tags
-        clean = strip_punct(q)
-        clean = tuple(clean.split()[:limit])
-        anki[clean] = note
-        # print(clean, '==', note)
+    for nid, note in notes.items():
+        if decks and note['deck'].startswith(decks):
+            continue
+        q = re.sub('<[^<]+>', ' ', note['question'])        # try to strip out any xml tags
+        q = q.replace('&nbsp;', ' ').lower()            # These tags are the bane of my existence
+        clean = strip_punct(q).split()
+        if limit:
+            clean = clean[:limit]
+        anki[nid] = note
+        count += 1
+
+        # Using words as keys instead of entire questions improved search speed by 10x which means
+        # rank_list can process at over 10k words per second now
+        for word in clean:
+            if word in anki:
+                anki[word].add(nid)
+            else:
+                anki[word] = {nid}
+
+
+    if count != len(notes):
+        eprint("\tSelected", rns(count), "notes for searching.")
 
     return anki
+
+
+def meta_usage(manual_mode):
+    "Track program run count and remind to leave a review after 10, 30, 90... days and then once a year."
+    def create():
+        return dict(created=int(time.time()), manual=0, automatic=0, reminders=0, last_reminder=0)
+    def increment(key):
+        nonlocal meta
+        if key not in meta:
+            meta[key] = 0
+        else:
+            meta[key] += 1
+
+    filename = os.path.join('cache', 'usage.json')
+    meta = make_or_load_json(filename, create)
+    if manual_mode:
+        increment('manual')
+    else:
+        increment('automatic')
+
+
+    total_usage = meta['manual'] + meta['automatic']
+    usage_days = (time.time() - meta['created']) / 86400
+    days_since_last_reminder = (time.time() - meta['last_reminder']) / 86400
+    # print(days_since_last_reminder, meta['reminders'], usage_days)
+
+    # Note: You can delete reviews.txt to make the reminders stop forever.
+    if manual_mode and total_usage >= 4 and usage_days >= 4 and os.path.exists('reviews.txt') and \
+    days_since_last_reminder >= min(256, 2 * meta['reminders']**1.414):
+        increment('reminders')
+        meta['last_reminder'] = int(time.time())
+        print("\n\n")
+        print(open('reviews.txt').read())
+
+    dump_json(filename, meta)
 
 
 def ignore_words(words, ignore_list):
@@ -407,31 +274,6 @@ def ignore_words(words, ignore_list):
         else:
             out.append(word)
     return out
-
-
-def check_anki(word, anki):
-    '''Return questions match word in anki'''
-    if word and anki:
-        return [anki[key] for key in anki if word in key]
-    return []
-
-def print_anki(found):
-    '''Print each question found in anki cards'''
-    out = []
-    for note in found:
-        # print(note)
-        out.append([])
-        out.append(('Deck:', note['deck']))
-        ques = note['question']
-        queue = note['queue']
-        if queue == -1:
-            ques = 'Suspended: ' + ques
-        elif queue == 0:
-            ques = 'New: ' + ques
-        if len(ques) > 256:
-            ques = ques[:256] + '...'
-        out.append(('Question:', ques))
-    auto_columns(out, space=2, printme=True)
 
 
 def user_word(text):
@@ -450,18 +292,369 @@ def user_word(text):
     return word.strip()
 
 
+
+def output_csv(ranked, ofile, book_freq):
+    '''Ouput words as csv file.'''
+    with open(ofile, 'w') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow("Word Root FPM Total_FPM Book_Count".split())
+        for word in ranked:
+            writer.writerow([word.word, word.root, \
+            fmt_fpm(word.fpm), fmt_fpm(word.derived), book_freq.get(word.word, '')])
+    eprint("Writing csv file:", ofile)
+    return True
+
+
+class Word:
+    "Calculate a word's root and fpm"
+
+    def __init__(self, word, tree, args):
+        self.extra = []
+        if type(word) == list:
+            self.extra = word[1:]
+            word = word[0]
+        self.word = word
+        self.fpm = tree.get_fpm(word)
+        self.root = tree.find_root(word, silent=True) or word
+        self.derived, _ = tree.total_freq(word, silent=True, nostars=(not args.stars), highstars=args.starval)
+
+
+    def check_anki(self, anki):
+        '''Return nids that match word in anki'''
+        if not anki:
+            return []
+        nids = []
+        for word in (self.word, self.root):
+            if word in anki:
+                nids += anki[word]
+        return list(set(nids))
+
+
+    def print_anki(self, anki):
+        '''Print each question found in anki cards'''
+        out = []
+        for nid in self.check_anki(anki):
+            note = anki[nid]
+            out.append([])
+            out.append(('Deck:', note['deck']))
+            ques = note['question']
+            queue = note['queue']
+            if queue == -1:
+                ques = 'Suspended: ' + ques
+            elif queue == 0:
+                ques = 'New: ' + ques
+            if len(ques) > 256:
+                ques = ques[:256] + '...'
+            out.append(('Question:', ques))
+        auto_columns(out, space=2, printme=True)
+
+
+    def adj(self, args):
+        "calculate the adjustment"
+        if self.fpm:
+            return self.fpm * (self.derived / self.fpm) ** args.sortfactor
+        else:
+            return 0
+
+
+    def skipped(self, args):
+        # check if word should
+        if args.max and self.derived > args.max:
+            return True
+        if args.min and self.derived < args.min:
+            return True
+        if args.skipanki and self.check_anki(args.anki):
+            return True
+        return False
+
+
+    def fmt_fpm(self,):
+        self.fpm = fmt_fpm(self.fpm)
+        self.derived = fmt_fpm(self.derived)
+
+
+    def print_entry(self, tree, root=True):
+        if root:
+            word = self.root or self.word
+        else:
+            word = self.word
+        entry = tree.get_entry(word)
+        if entry:
+            print("\nWiktionary entry for:", word)
+            print(entry)
+
+
+    def print_info(self, tree, args, dupes=1, book_freq=None):
+        '''Print the info of a word given'''
+
+        print("Processing word:", self.word, 'at', show_fpm(self.fpm) + ':',
+              "           (Card already in Anki)" if self.check_anki(args.anki) else '')
+
+        # Show matches in anki database
+        if args.anki:
+            self.print_anki(args.anki)
+
+        # Print total_freq tree and get bc (the book count)
+        print('')
+        _, book_count = tree.total_freq(self.word, book=book_freq, \
+        threshold=args.threshold, nostars=(not args.stars), highstars=args.starval)
+        print('')
+
+        # Calculate the bookfpm
+        book_fpm = book_count / book_freq['__TOTAL__'] * 1e6 if book_freq else 0
+
+        # Get book frequency of word
+        out = [' '.join((self.word, show_fpm(self.fpm))), '', '']
+        if self.root and self.root != self.word:
+            out[1] = ' '.join(('  Root:', self.root, show_fpm(tree.get_fpm(self.root))))
+
+        # Total
+        out.append('Total: ' + show_fpm(self.derived))
+        if book_count:
+            out.append('Book: ' + show_fpm(book_fpm))
+
+        # Add dupes if greater than 1 (the loneliest number)
+        if dupes > 1:
+            out.append('Dupes: ' + str(dupes))
+
+
+        # Calculate the adjustment based on book frequency and dupes.
+        # By design this can only increase the word, never decrease it.
+        # The root on book_fpm limits the impact of the book
+        adjusted = (1 + (dupes - 1)/100)**3
+        adjusted *= max((book_fpm / max(self.fpm, 0.001))**.2, 1)
+        if adjusted > 1:
+            out.append('Adj: ' + show_fpm(adjusted * self.derived))
+
+        spaces = (' '*20, ' '*20, ' '*2, ' '*15, ' '*14)
+
+        auto_columns([spaces, out], space=2, printme=True, wrap=999)
+        print('_' * len(out))
+
+        return True
+
+
+
+def rank_list(words, tree, args, resort=True):
+    "rank the list of words and return Word objects"
+    eprint("Calculating the frequency and root of every word in the list of", rns(len(words)))
+
+    processed = 0
+    ranked = []     # words resorted by adj factor
+    start = tpc()
+
+    for word in words:
+        word = Word(word, tree, args)
+        processed += 1
+        if not processed % 1000:
+            wps = int(processed / (tpc() - start))
+            eprint("Processed", rns(processed), 'words at', rns(wps), 'per second:', word.word)
+        if not word.skipped(args):
+            ranked.append((word.adj(args), word))
+
+    if resort:
+        if args.sort:
+            ranked.sort(key=lambda x: x[0], reverse=True)
+        if args.reverse:
+            ranked.sort(key=lambda x: x[0])
+
+
+    # Return the sorted list of words
+    return [row[1] for row in ranked]
+
+
+
+def rank_book(filename, tree, args):
+    "Output table of entire book with word, occurences, fpm"
+
+    eprint("\n")
+    if os.path.exists(filename):
+        eprint("Loading:", filename)
+        book = get_freq_table(filename)
+    else:
+        eprint("Can't find filename:", filename)
+        return False
+
+    total = book.pop('__TOTAL__')
+
+    # Get words
+    words = [[key, val] for key, val in book.items()]
+    if not words:
+        eprint(r"Error. Could not find any words ¯\_(ツ)_/¯ ")
+        return False
+    words.sort(key=lambda x: x[1], reverse=True)
+    eprint("Found", rns(len(words)), "unique words in book out of", rns(total), 'total words.\n')
+    words = rank_list(words, tree, args)
+
+
+    written = 0
+    eprint("\n")
+    ofile = os.path.basename(filename) + '.csv'
+    with open(ofile, 'w') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow("Word Count Book_FPM FPM Ratio Root Total_FPM".split())
+
+        for word in words:
+            count = word.extra[0]
+            book_fpm = fmt_fpm(count / total * 1e6)
+            fpm_ratio = book_fpm / word.fpm if word.fpm else -1
+            fpm_ratio = int(fpm_ratio) if fpm_ratio >= 10 else round(fpm_ratio, 2)
+            word.fmt_fpm()
+
+            writer.writerow([word.word, count, book_fpm, word.fpm, fpm_ratio, word.root, word.derived])
+            written += 1
+
+
+    eprint(rns(written), "words written to:", ofile)
+    return True
+
+
+def arrows(word):
+    up = word.count('\x1b[A')
+    down = word.count('\x1b[B')
+    return up - down
+
+
+def manual_input(tree, args, book_freq):
+    "Manually input words and check them"
+
+    word = None
+    history = []
+    count = 0
+    while True:
+        count += 1
+        print("")
+        if not word:
+            print('\n'*3)
+            if count == 1:
+                print("Common accented characters ready to copy-paste:\n")
+            print(COMMON_SYMBOLS, '\n')
+            word = user_word('Input word or type q to quit: ')
+
+
+        # Load word from history using up/down arrows
+        if arrows(word):
+            try:
+                word = history[-(arrows(word))]
+            except IndexError:
+                print(history[-5:])
+                word = ''
+                continue
+            print("Replaying word:", word)
+        elif len(word.strip()) > 1:
+            history.append(word)
+
+        word = word.strip().lower()
+
+        # Commands
+        if word == 'q':
+            return True
+        if word == 'w' and history:
+            # Redo the last word and print entry
+            word = Word(tree.check_spelling(history[-1]), tree, args)
+            word.print_entry(tree, root=False)
+            word = None
+            continue
+
+        # Check for bad words
+        if ' ' in word:
+            print("Multiple word phrases are not supported.")
+            word = ''
+        if not word or word == 'w':
+            word = None
+            continue
+
+        # Print the info for the word
+        word = Word(tree.check_spelling(word), tree, args)
+        word.print_info(tree, args, book_freq=book_freq)
+
+        # If the Wiktionary entry is available, print it on request
+        if not args.noentry and tree.get_entry(word.root):
+            i = user_word("\nPress enter to show root entry, type w to show word entry, or type new word: ")
+            if i.lower() == 'w':
+                word.print_entry(tree, root=False)
+                word = None
+            elif not i:
+                word.print_entry(tree)
+                word = None
+            else:
+                word = i
+        else:
+            word = None
+
+
+def process_list(words, tree, args, book_freq):
+    "Process a list of words"
+    # Cancel out a word in words for each word in ignore
+    # Done before duplicates, because that will remove words
+    if args.ignore:
+        words = ignore_words(words, args.ignore)
+
+    # Look for duplicates
+    dupes = dict()
+    unranked = []
+    for word in words:
+        if word in dupes:
+            dupes[word] += 1
+        else:
+            dupes[word] = 1
+            unranked.append(word)
+
+
+    # Sort the words into a list of ranked Word objects
+    ranked = rank_list(unranked, tree, args)
+
+    if args.csv:
+        return output_csv(ranked, args.csv, book_freq)
+
+
+    eprint("\n\nDone! Here are the words with definitions.")
+    for line in open('warning.txt').readlines():
+        eprint(line.strip())
+        eprint("")
+
+    eprint("Processing", len(ranked), "words...")
+    if not args.noentry and len(ranked) >= 1000:
+        eprint("\nWarning: This is going to take a long ass time...")
+        eprint("May I suggest using --noentry to print words without their definitions?\n")
+
+
+    # Output words and definitions
+    count = 0
+    start = tpc()
+    for word in ranked:
+        count += 1
+        if not count % 100:
+            wps = count / (tpc() - start)
+            eprint("Processed word number", count, "at", wps, "per second.")
+
+        print('\n' * 5)
+        word.print_info(tree, args, dupes=dupes.get(word.word), book_freq=book_freq)
+        if not args.noentry:
+            word.print_entry(tree)
+
+    eprint("Done.")
+    return True
+
+
 def main():
     args = parse_args()
 
     # Load data
-    words = []              # List of words to process
-    duplicates = dict()     # Duplicate words in list
-    anki = load_anki(args.anki, limit=9) if args.anki else dict()
     tree = Tree(args.freq, args.lang, debug=args.debug)
-    book_freq = dict()      # Load a book to use as a frequency source (optional)
+    args.anki = load_anki(args) if args.anki else dict()
+    eprint("\n")
+
+    # Load a book to use as a frequency source (optional)
+    book_freq = dict()
     if args.book and os.path.exists(args.book):
-        book_freq = make_or_load_json(os.path.join('cache', os.path.basename(args.book) + '.json'), \
-                    get_freq_table, args.book)
+        book_freq = make_or_load_json(\
+            os.path.join('cache', os.path.basename(args.book) + '.json'), \
+            get_freq_table, args.book)
+
+
+    if args.rankbook:
+        return rank_book(args.rankbook or args.filename, tree, args)
 
 
     # Get word list
@@ -471,142 +664,27 @@ def main():
         words = tree.words
     elif args.filename:
         # Get words from txt or csv file
-        words, duplicates = get_words(args.filename, args.length, skiplines=args.skiplines)
-    if args.ignore:
-        words = ignore_words(words, args.ignore)    # Cancel out a word in words for each word in ignore
-    if args.filename:
+        words = get_words(args.filename, args.length, skiplines=args.skiplines, multiline=args.multiline)
         eprint("Found", len(words), "words in input file:", args.filename)
     else:
+        # Manual mode
+        meta_usage(False)
         eprint("No filename specified, but you can manually type in a word below if you wish:")
+        return manual_input(tree, args, book_freq)
 
 
-    def print_info(word, root, margin=2):
-        '''Print the info of a word given'''
-        # todo just pass the word
-        fpm, _ = tree.total_freq(word, silent=True, nostars=args.nostars, highstars=args.highstars)
+    # Process word list (automatic mode)
+    meta_usage(True)
+    process_list(words, tree, args, book_freq)
 
 
-        # Check anki
-        found = check_anki(word, anki) + check_anki(root, anki)
-
-        # Skip if found cards are not suspended
-        if found and args.skipanki:
-            # Skip if cards are more than just suspended
-            if not {note['queue'] for note in found} == '-1':
-                return False
-
-        print("\n" * margin, end='')
-        print("Processing word:", word, 'at', show_fpm(tree.get_fpm(word)) + ':',
-              "           (Card already in Anki)" if found else '')
-        print_anki(found)
-        tree.find_root(word, silent=False)
-
-
-        # Print total_freq tree
-        print("")
-        fpm, bc = tree.total_freq(word, book=book_freq, threshold=args.threshold, nostars=args.nostars, highstars=args.highstars)
-        book_fpm = bc / book_freq['__TOTAL__'] * 1e6 if book_freq else 0
-
-
-        # Get book frequency of word
-        out = [' '.join((word, show_fpm(tree.get_fpm(word)))), '', '']
-        if root and root != word:
-            out[1] = ' '.join(('  Root:', root, show_fpm(tree.get_fpm(root))))
-
-        out.append('Total: ' + show_fpm(fpm))
-        if bc:
-            out.append('Book: ' + show_fpm(book_fpm))
-
-        dupes = duplicates.get(word, 0)
-        if dupes:
-            out.append('Dupes: ' + str(dupes))
-
-
-        # Calculate the adjustment based on book frequency and dupes.
-        # By design this can only increase the word, never decrease it.
-        # The root on book_fpm limits the impact of the book
-        dupes_percent = dupes / (len(words) + 1) # close enough, lol
-        adjusted = (1 + dupes_percent)**3 * max((book_fpm / max(fpm, 0.001))**.2, 1)
-        adjusted = fpm * adjusted
-
-        if adjusted != fpm:
-            out.append('Adj: ' + show_fpm(adjusted))
-        else:
-            out.append('Freq: ' + show_fpm(fpm))
-
-        # spaces = (' '*50, ' '*15, ' '*14)
-        spaces = (' '*20, ' '*30, ' '*4, ' '*15, ' '*14)
-        # spaces = (word.replace(' ', '-') for word in spaces)
-
-        # print('debug out =', repr(out))
-        auto_columns([spaces, out], space=2, printme=True, wrap=999)
-        print('_' * len(out))
-        return True
-
-
-    # Manual mode
-    if not words:
-        word = None
-        while True:
-            print("\n\n")
-            if not word:
-                word = user_word('Input word or type q to quit: ')
-
-            word = word.strip().lower()
-            if word == 'q':
-                return True
-            if not word:
-                continue
-
-            if word:
-                word = tree.check_spelling(word)
-                root = tree.find_root(word, silent=False)
-                print_info(word, root)
-
-            if not args.noentry and tree.get_entry(word):
-                i = user_word("\nPress enter to show entry or type new word: ")
-                if not i:
-                    print_entry(root or word, tree)
-                    word = None
-                else:
-                    word = i
-            else:
-                word = None
-
-
-    eprint("\n\nCalculating the frequency and root of every word in the list.")
-    ranked = rank_words(words, tree, args)  # Go through list of words
-
-    if args.csv:
-        return output_csv(ranked, tree, args, book_freq)
-
-
-    eprint("\n\nDone! Here are the words with definitions.")
-    for line in open('warning.txt').readlines():
-        eprint(line.strip())
-        eprint("")
-
-
-    count = 0
-    eprint("Processing", len(ranked), "words...")
-    for _derived, word in ranked:
-        root = tree.find_root(word, silent=True)
-        if print_info(word, root, margin=5):
-            if word:
-                if not args.noentry:
-                    print_entry(root or word, tree)
-            count += 1
-            if not count % 100 and len(ranked) >= 200:
-                eprint("Processed word number", count)
-    eprint("Done.")
     return True
 
-open('warning.txt').readlines()
 
 
 if __name__ == "__main__":
     os.chdir(sys.path[0])       # change to local dir
-    if not '-lang' in ' '.join(sys.argv[:]).lower():
+    if '-lang' not in ' '.join(sys.argv[:]).lower():
         print("Language set to default: es Spanish")
         print("Use --lang to change\n")
 

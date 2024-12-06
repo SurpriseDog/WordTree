@@ -1,178 +1,321 @@
-FPM:  Word:                 Gender:
-449   problema              ? -> m 
-356   forma                 ? -> f 
-243   llama                 ? -> f 
-243   toma                  ? -> f 
-186   arma                  ? -> f 
-178   cama                  ? -> f 
-118   sistema               ? -> m 
-101   programa              ? -> m 
-95    broma                 ? -> f 
-89    alma                  ? -> f 
-82    víctima               ? -> f 
-79    tema                  ? -> m 
-73    calma                 ? -> f 
-52    dama                  ? -> f 
-43    fantasma              ? -> m 
-42    lástima               ? -> f 
-37    mama                  ? -> f 
-36    firma                 ? -> f 
-27    alarma                ? -> f 
-26    coma                  ? -> f 
-23    ma                    ? -> f 
-22    crema                 ? -> f 
-19    prima                 ? -> f 
-18    clima                 ? -> m 
-17    cima                  ? -> f 
-16    drama                 ? -> m 
-14    idioma                ? -> m 
-14    fama                  ? -> f 
-13    trauma                ? -> m 
-13    máxima                ? -> f 
-12    suma                  ? -> f 
-12    quema                 ? -> f 
-12    poema                 ? -> m 
-12    pluma                 ? -> f 
-11    plataforma            ? -> f 
-11    goma                  ? -> f 
-10    telegrama             ? -> m 
-9.7   norma                 ? -> f 
-9.3   rama                  ? -> f 
-7.5   paloma                ? -> f 
-7.4   fuma                  ? -> f 
-7.1   karma                 ? -> m 
-6.6   aroma                 ? -> f 
-6.5   espuma                ? -> f 
-6.4   palma                 ? -> f 
-5.9   pijama                ? -> m 
-5.9   extrema               ? -> f 
-5.5   lema                  ? -> m 
-5.4   plasma                ? -> m 
-5.3   trama                 ? -> f 
-4.6   legítima              ? -> f 
-4.5   lima                  ? -> f 
-4.4   autoestima            ? -> f 
-4.3   estima                ? -> f 
-4.3   dilema                ? -> m 
-4     reforma               ? -> f 
-3.9   asma                  ? -> f 
-3.9   rima                  ? -> f 
-3.6   diploma               ? -> m 
-3.6   gamma                 ? -> f 
-3.6   enigma                ? -> m 
-3.4   síntoma               ? -> m 
-3.4   panorama              ? -> m 
-3.4   gama                  ? -> f 
-3.3   esquema               ? -> m 
-3.1   lágrima               ? -> f 
-2.7   décima                ? -> f 
-2.7   mucama                ? -> f 
-2.6   aneurisma             ? -> m 
-2.5   holograma             ? -> m 
-2.2   puma                  ? -> m 
-2.1   lama                  ? -> f 
-2     hematoma              ? -> m 
-2     esgrima               ? -> f 
-1.9   bellísima             ? -> f 
-1.9   chusma                ? -> f 
-1.8   carisma               ? -> m 
-1.8   rema                  ? -> m 
-1.6   emblema               ? -> m 
-1.6   gema                  ? -> f 
-1.5   diafragma             ? -> m 
-1.4   crucigrama            ? -> m 
-1.4   diagrama              ? -> m 
-1.4   derrama               ? -> f 
-1.3   genoma                ? -> m 
-1.2   edema                 ? -> m 
-1.2   ecosistema            ? -> m 
-1.1   melodrama             ? -> m 
-0.98  bruma                 ? -> f 
-0.97  magma                 ? -> m 
-0.94  enzima                ? -> f 
-0.94  loma                  ? -> f 
-0.89  yema                  ? -> f 
-0.86  paradigma             ? -> m 
-0.85  linfoma               ? -> m 
-0.85  madama                ? -> f 
-0.84  estigma               ? -> m 
-0.84  sigma                 ? -> f 
-0.83  electrocardiograma    ? -> m 
-0.83  estratagema           ? -> f 
-0.82  enema                 ? -> m 
-0.75  diadema               ? -> f 
-0.75  teorema               ? -> m 
-0.7   cronograma            ? -> m 
-0.68  cromosoma             ? -> m 
-0.67  pantomima             ? -> f 
-0.67  cinema                ? -> m 
-0.64  dogma                 ? -> m 
-0.62  fotograma             ? -> m 
-0.61  prisma                ? -> m 
-0.6   yuma                  ? -> f 
-0.58  soma                  ? -> m 
-0.57  enfisema              ? -> m 
-0.56  flama                 ? -> f 
-0.55  sima                  ? -> f 
-0.55  anagrama              ? -> m 
-0.55  pentagrama            ? -> m 
-0.53  glaucoma              ? -> m 
-0.52  tarima                ? -> f 
-0.49  autónoma              ? -> f 
-0.44  cuaresma              ? -> f 
-0.44  reuma                 ? -> m 
-0.44  jima                  ? -> f 
-0.43  juma                  ? -> f 
-0.43  melanoma              ? -> m 
-0.42  hemograma             ? -> m 
-0.39  pócima                ? -> f 
-0.37  grama                 ? -> f 
-0.36  chema                 ? -> f 
-0.34  eczema                ? -> m 
-0.34  electroencefalograma  ? -> m 
-0.33  amalgama              ? -> f 
-0.33  cataplasma            ? -> f 
-0.33  flema                 ? -> f 
-0.32  blasfema              ? -> f 
-0.32  doma                  ? -> f 
-0.31  escama                ? -> f 
-0.31  monograma             ? -> m 
-0.29  angiograma            ? -> m 
-0.29  ectoplasma            ? -> m 
-0.26  encefalograma         ? -> m 
-0.25  horma                 ? -> f 
-0.25  diorama               ? -> m 
-0.25  carcinoma             ? -> m 
-0.24  sarcoma               ? -> m 
-0.24  moma                  ? -> f 
-0.22  ecocardiograma        ? -> m 
-0.21  herma                 ? -> m 
-0.19  axioma                ? -> m 
-0.19  cubrecama             ? -> m 
-0.19  radiograma            ? -> m 
-0.19  politrauma            ? -> m 
-0.18  cúrcuma               ? -> f 
-0.17  carcoma               ? -> f 
-0.17  eccema                ? -> m 
-0.17  marisma               ? -> f 
-0.17  chama                 ? -> m 
-0.16  shawarma              ? -> m 
-0.16  glioblastoma          ? -> m 
-0.15  cisma                 ? -> m 
-0.14  grima                 ? -> f 
-0.14  organigrama           ? -> m 
-0.14  ánima                 ? -> f 
-0.14  anatema               ? -> m 
-0.13  feocromocitoma        ? -> m 
-0.13  huma                  ? -> f 
-0.13  cablegrama            ? -> m 
-0.13  merma                 ? -> f 
-0.13  jama                  ? -> f 
-0.12  glioma                ? -> m 
-0.12  astrónoma             ? -> f 
-0.11  teratoma              ? -> m 
-0.1   criptograma           ? -> m 
-0.1   gomaespuma            ? -> f 
-0.1   osteosarcoma          ? -> m 
+debug False 0.6645709410076961
+debug False 0.8403420159593225
+debug True 9.663654447337828
+debug True 9.277771136481368
+debug True 7.549582075590479
+debug True 7.447784637757179
+debug True 7.1139837369549666
+debug True 6.574220578210962
+debug True 6.4960969631295935
+debug True 6.389564760745908
+debug True 5.920823070257694
+debug True 5.890047100680185
+debug True 5.518368083474884
+debug True 5.388162058339269
+debug True 5.317140590083479
+debug True 4.587986849324035
+debug True 4.48145464694035
+debug True 4.410433178684559
+debug True 4.327574799052805
+debug True 4.26839024217298
+debug True 4.022182485552908
+debug True 3.901445989518064
+debug True 3.899078607242872
+debug True 3.6457687037972204
+debug True 3.5984210582933605
+debug True 3.5865841469173954
+debug True 3.4469085926810084
+debug True 3.4232347699290786
+debug True 3.3853566535259905
+debug True 3.2693549220415337
+debug True 3.0728621932005145
+debug True 2.724856998747143
+debug True 2.7011831759952134
+debug True 2.5591402394836336
+debug True 2.4999556826038085
+debug True 2.1756243109023674
+debug True 2.1353788122240864
+debug True 2.01227493391405
+debug True 1.9625599061349972
+debug True 1.9057427315303654
+debug True 1.8536603214761191
+debug True 1.8181495873482243
+debug True 1.7731693241195574
+debug True 1.5814113598289243
+debug True 1.5601049193521872
+debug True 1.5127572738483273
+debug True 1.4109598360150282
+debug True 1.4109598360150282
+debug True 1.3541426614103962
+debug True 1.3446731323096242
+debug True 1.2239366362747812
+debug True 1.2144671071740092
+debug True 1.0700567883872363
+debug True 0.975361497379516
+debug True 0.9729941151043231
+debug True 0.9422181455268142
+debug True 0.9351159987012352
+debug True 0.8948705000229541
+debug True 0.8593597658950591
+debug True 0.8498902367942871
+debug True 0.8498902367942871
+debug True 0.8427880899687081
+debug True 0.8380533254183221
+debug True 0.8262164140423571
+debug True 0.8262164140423571
+debug True 0.8238490317671642
+debug True 0.7504601812361811
+debug True 0.7504601812361811
+debug True 0.696010388906742
+debug True 0.6841734775307771
+debug True 0.6723365661548121
+debug True 0.6699691838796191
+debug True 0.6368258320269171
+debug True 0.6226215383757592
+debug True 0.608417244724601
+debug True 0.6036824801742151
+debug True 0.575273892871899
+debug True 0.5658043637711271
+debug True 0.5563348346703552
+debug True 0.5539674523951621
+debug True 0.5539674523951621
+debug True 0.5492326878447761
+debug True 0.530293629643232
+debug True 0.5208241005424601
+debug True 0.4924155132401441
+debug True 0.4427004854610911
+debug True 0.4403331031858981
+debug True 0.43559833863551206
+debug True 0.43086357408512604
+debug True 0.4284961918099331
+debug True 0.42139404498435407
+debug True 0.38825069313165206
+debug True 0.37167901720530105
+debug True 0.36457687037972203
+debug True 0.34090304762779206
+debug True 0.33853566535259905
+debug True 0.3338009008022131
+debug True 0.3338009008022131
+debug True 0.33143351852702
+debug True 0.31959660715105503
+debug True 0.3172292248758621
+debug True 0.30775969577509005
+debug True 0.30775969577509005
+debug True 0.293555402123932
+debug True 0.286453255298353
+debug True 0.2556772857208441
+debug True 0.253309903445651
+debug True 0.24857513889526503
+debug True 0.24620775662007205
+debug True 0.243840374344879
+debug True 0.23910560979449305
+debug True 0.22253393386814205
+debug True 0.21306440476737004
+debug True 0.18702319974024703
+debug True 0.18702319974024703
+debug True 0.18702319974024703
+debug True 0.18702319974024703
+debug True 0.18228843518986101
+debug True 0.17281890608908904
+debug True 0.16808414153870302
+debug True 0.16571675926351
+debug True 0.16571675926351
+debug True 0.16098199471312405
+debug True 0.15624723016273803
+debug True 0.146777701061966
+debug True 0.14441031878677305
+debug True 0.14204293651158004
+debug True 0.13967555423638703
+debug True 0.13730817196119402
+debug True 0.134940789686001
+debug True 0.132573407410808
+debug True 0.13020602513561502
+debug True 0.12547126058522903
+debug True 0.12547126058522903
+debug True 0.11836911375965002
+debug True 0.11600173148445701
+debug True 0.11363434920926402
+debug True 0.10416482010849201
+debug True 0.10416482010849201
+debug True 0.10179743783329902
+debug False 298
+debug False 0.06592605309560895
+FPM:   Word:                 Gender:
+449    problema              ? -> m 
+356    forma                 ? -> f 
+243    llama                 ? -> f 
+243    toma                  ? -> f 
+186    arma                  ? -> f 
+178    cama                  ? -> f 
+118    sistema               ? -> m 
+101    programa              ? -> m 
+95     broma                 ? -> f 
+89     alma                  ? -> f 
+82     víctima               ? -> f 
+79     tema                  ? -> m 
+73     calma                 ? -> f 
+52     dama                  ? -> f 
+43     fantasma              ? -> m 
+42     lástima               ? -> f 
+37     mama                  ? -> f 
+36     firma                 ? -> f 
+27     alarma                ? -> f 
+26     coma                  ? -> f 
+23     ma                    ? -> f 
+22     crema                 ? -> f 
+19     prima                 ? -> f 
+18     clima                 ? -> m 
+17     cima                  ? -> f 
+16     drama                 ? -> m 
+14     idioma                ? -> m 
+14     fama                  ? -> f 
+13     trauma                ? -> m 
+13     máxima                ? -> f 
+12     suma                  ? -> f 
+12     quema                 ? -> f 
+12     poema                 ? -> m 
+12     pluma                 ? -> f 
+11     plataforma            ? -> f 
+11     goma                  ? -> f 
+10     telegrama             ? -> m 
+9.7    norma                 ? -> f 
+9.3    rama                  ? -> f 
+7.5    paloma                ? -> f 
+7.4    fuma                  ? -> f 
+7.1    karma                 ? -> m 
+6.6    aroma                 ? -> f 
+6.5    espuma                ? -> f 
+6.4    palma                 ? -> f 
+5.9    pijama                ? -> m 
+5.9    extrema               ? -> f 
+5.5    lema                  ? -> m 
+5.4    plasma                ? -> m 
+5.3    trama                 ? -> f 
+4.6    legítima              ? -> f 
+4.5    lima                  ? -> f 
+4.4    autoestima            ? -> f 
+4.3    estima                ? -> f 
+4.3    dilema                ? -> m 
+4      reforma               ? -> f 
+3.9    asma                  ? -> f 
+3.9    rima                  ? -> f 
+3.6    diploma               ? -> m 
+3.6    gamma                 ? -> f 
+3.6    enigma                ? -> m 
+3.4    síntoma               ? -> m 
+3.4    panorama              ? -> m 
+3.4    gama                  ? -> f 
+3.3    esquema               ? -> m 
+3.1    lágrima               ? -> f 
+2.7    décima                ? -> f 
+2.7    mucama                ? -> f 
+2.6    aneurisma             ? -> m 
+2.5    holograma             ? -> m 
+2.2    puma                  ? -> m 
+2.1    lama                  ? -> f 
+2      hematoma              ? -> m 
+2      esgrima               ? -> f 
+1.9    bellísima             ? -> f 
+1.9    chusma                ? -> f 
+1.8    carisma               ? -> m 
+1.8    rema                  ? -> m 
+1.6    emblema               ? -> m 
+1.6    gema                  ? -> f 
+1.5    diafragma             ? -> m 
+1.4    crucigrama            ? -> m 
+1.4    diagrama              ? -> m 
+1.4    derrama               ? -> f 
+1.3    genoma                ? -> m 
+1.2    edema                 ? -> m 
+1.2    ecosistema            ? -> m 
+1.1    melodrama             ? -> m 
+0.975  bruma                 ? -> f 
+0.973  magma                 ? -> m 
+0.942  enzima                ? -> f 
+0.935  loma                  ? -> f 
+0.895  yema                  ? -> f 
+0.859  paradigma             ? -> m 
+0.85   linfoma               ? -> m 
+0.85   madama                ? -> f 
+0.843  estigma               ? -> m 
+0.838  sigma                 ? -> f 
+0.826  electrocardiograma    ? -> m 
+0.826  estratagema           ? -> f 
+0.824  enema                 ? -> m 
+0.75   diadema               ? -> f 
+0.75   teorema               ? -> m 
+0.696  cronograma            ? -> m 
+0.684  cromosoma             ? -> m 
+0.672  pantomima             ? -> f 
+0.67   cinema                ? -> m 
+0.637  dogma                 ? -> m 
+0.623  fotograma             ? -> m 
+0.608  prisma                ? -> m 
+0.604  yuma                  ? -> f 
+0.575  soma                  ? -> m 
+0.566  enfisema              ? -> m 
+0.556  flama                 ? -> f 
+0.554  sima                  ? -> f 
+0.554  anagrama              ? -> m 
+0.549  pentagrama            ? -> m 
+0.53   glaucoma              ? -> m 
+0.521  tarima                ? -> f 
+0.492  autónoma              ? -> f 
+0.443  cuaresma              ? -> f 
+0.44   reuma                 ? -> m 
+0.436  jima                  ? -> f 
+0.431  juma                  ? -> f 
+0.428  melanoma              ? -> m 
+0.421  hemograma             ? -> m 
+0.388  pócima                ? -> f 
+0.372  grama                 ? -> f 
+0.365  chema                 ? -> f 
+0.341  eczema                ? -> m 
+0.339  electroencefalograma  ? -> m 
+0.334  amalgama              ? -> f 
+0.334  cataplasma            ? -> f 
+0.331  flema                 ? -> f 
+0.32   blasfema              ? -> f 
+0.317  doma                  ? -> f 
+0.308  escama                ? -> f 
+0.308  monograma             ? -> m 
+0.294  angiograma            ? -> m 
+0.286  ectoplasma            ? -> m 
+0.256  encefalograma         ? -> m 
+0.253  horma                 ? -> f 
+0.249  diorama               ? -> m 
+0.246  carcinoma             ? -> m 
+0.244  sarcoma               ? -> m 
+0.239  moma                  ? -> f 
+0.223  ecocardiograma        ? -> m 
+0.213  herma                 ? -> m 
+0.187  axioma                ? -> m 
+0.187  cubrecama             ? -> m 
+0.187  radiograma            ? -> m 
+0.187  politrauma            ? -> m 
+0.182  cúrcuma               ? -> f 
+0.173  carcoma               ? -> f 
+0.168  eccema                ? -> m 
+0.166  marisma               ? -> f 
+0.166  chama                 ? -> m 
+0.161  shawarma              ? -> m 
+0.156  glioblastoma          ? -> m 
+0.147  cisma                 ? -> m 
+0.144  grima                 ? -> f 
+0.142  organigrama           ? -> m 
+0.14   ánima                 ? -> f 
+0.137  anatema               ? -> m 
+0.135  feocromocitoma        ? -> m 
+0.133  huma                  ? -> f 
+0.13   cablegrama            ? -> m 
+0.125  merma                 ? -> f 
+0.125  jama                  ? -> f 
+0.118  glioma                ? -> m 
+0.116  astrónoma             ? -> f 
+0.114  teratoma              ? -> m 
+0.104  criptograma           ? -> m 
+0.104  gomaespuma            ? -> f 
+0.102  osteosarcoma          ? -> m 
+debug False 180
 
 Found 180 nouns
