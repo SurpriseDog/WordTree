@@ -21,10 +21,11 @@ def parse_args():
     ]
 
     language = [\
-    ['lang', '', list, ('es', 'Spanish')],
-    '''Language code and name. Example: --lang en English
+    ['lang', '', list, ('en', 'English')],
+    '''Language code or name. For example: --lang es or --lang Spanish
+    will show you Spanish words. --lang English will show you English words.
+    The program will try to guess the correct language name from the code or code from the name, but you can also type the full name if something goes wrong like: --lang en English
     Go to https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes to look up your language code.
-    For example: "--lang en English" to look up English words.
     ''',
     ]
 
@@ -118,7 +119,6 @@ def parse_args():
 
     hidden = [\
     ['debug', '', int, 0],
-    '',
     ]
 
     am = ArgMaster(\
@@ -147,6 +147,12 @@ def parse_args():
             --lang sh Serbo-Croatian --freq freq/sr.xz
         ''')
         input()
+
+    if len(args.lang) == 1:
+        args.lang = guess_lang(args.lang[0])
+        if not args.lang:
+            sys.exit(1)
+        print("Set language to:", ' '.join(args.lang))
 
 
 
@@ -231,6 +237,31 @@ def guess_anki(path):
         sys.exit(1)
     print("Using default anki location:", path)
     return path
+
+
+def guess_lang(code):
+    "Look at language code or language name and attempt to guess the pair"
+
+    langcodes = {'ar': 'Arabic', 'bg': 'Bulgarian', 'bn': 'Bengali', 'br': 'Breton', 'ca': 'Catalan', 'cs': 'Czech', 'da': 'Danish', 'de': 'German', 'el': 'Greek', 'en': 'English', 'eo': 'Esperanto', 'es': 'Spanish', 'et': 'Estonian', 'eu': 'Basque', 'fa': 'Persian', 'fi': 'Finnish', 'fr': 'French', 'gl': 'Galician', 'he': 'Hebrew', 'hi': 'Hindi', 'hu': 'Hungarian', 'hy': 'Armenian', 'id': 'Indonesian', 'it': 'Italian', 'ja': 'Japanese', 'ka': 'Georgian', 'kk': 'Kazakh', 'ko': 'Korean', 'lv': 'Latvian', 'mk': 'Macedonian', 'ml': 'Malayalam', 'nl': 'Dutch', 'no': 'Norwegian', 'pl': 'Polish', 'pt': 'Portuguese', 'ro': 'Romanian', 'ru': 'Russian', 'sh': 'Serbo-Croatian', 'si': 'Sinhalese', 'sk': 'Slovak', 'sl': 'Slovenian', 'sq': 'Albanian', 'sv': 'Swedish', 'ta': 'Tamil', 'te': 'Telugu', 'th': 'Thai', 'tl': 'Tagalog', 'tr': 'Turkish', 'uk': 'Ukrainian', 'ur': 'Urdu', 'vi': 'Vietnamese', 'zh': 'Chinese'} # pylint: disable=line-too-long
+    langnames = {val: key for key, val in langcodes.items()}
+
+
+    # code -> language
+    code = code.lower().strip()
+    if code in langcodes:
+        return [code, langcodes[code]]
+
+    lang = code.title()
+    if lang in langnames:
+        return [langnames[lang], lang]
+
+    print("Error: Unknown language:", code)
+    print("If this is a real language that's not in my list you can try typing --lang <code> <name>")
+    print("For example: --lang en English")
+
+    print("\nThese are the current languages I know about:")
+    print(' '.join(sorted(langcodes.values())))
+    return False
 
 
 def tester():

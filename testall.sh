@@ -4,64 +4,64 @@ mkdir -p test
 
 # Run with:  reset; nice ./testall.sh
 # Windows users can use cygwin to run this
-# Some languages are commented out because they seem to be missing from the Wiktionary database.
 
 
-lc=ar; lang=Arabic; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=bg; lang=Bulgarian; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=bn; lang=Bengali; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=br; lang=Breton; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=ca; lang=Catalan; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=cs; lang=Czech; 		python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=da; lang=Danish; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=de; lang=German; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=el; lang=Greek; 		python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=eo; lang=Esperanto; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=es; lang=Spanish; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=et; lang=Estonian; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=eu; lang=Basque; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=fa; lang=Persian; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=fi; lang=Finnish; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=fr; lang=French; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=gl; lang=Galician; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=he; lang=Hebrew; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=hi; lang=Hindi; 		python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=hu; lang=Hungarian; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=hy; lang=Armenian; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=id; lang=Indonesian; python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=it; lang=Italian; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=ja; lang=Japanese; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=ka; lang=Georgian; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=kk; lang=Kazakh; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=ko; lang=Korean; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=lv; lang=Latvian; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=mk; lang=Macedonian; python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=ml; lang=Malayalam; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=nl; lang=Dutch; 		python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=no; lang=Norwegian; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=pl; lang=Polish; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=pt; lang=Portuguese; python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=ro; lang=Romanian; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=ru; lang=Russian; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
+lc=ar;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=bg;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=bn;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=br;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=ca;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=cs;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=da;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=de;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=el;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=en;		python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=eo;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=es;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=et;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=eu;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=fa;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=fi;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=fr;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=gl;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=he;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=hi;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=hu;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=hy;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=id;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=it;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=ja;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=ka;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=kk;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=ko;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=lv;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=mk;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=ml;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=nl;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=no;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=pl;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=pt;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=ro;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=ru;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
 
 # Serbo-Croation languages use code sh:
 # https://en.wikipedia.org/wiki/Serbo-Croatian
-# lc=bs; lang=Serbo-Croatian; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=sh; lang=Serbo-Croatian;      python3 -X utf8 wordtree.py --wikiroots --sort --csv test/bs.csv --lang $lc $lang --freq freq/bs.xz	# Bosnian
-lc=sh; lang=Serbo-Croatian; 	 python3 -X utf8 wordtree.py --wikiroots --sort --csv test/sr.csv --lang $lc $lang --freq freq/sr.xz	# Serbian
-lc=sh; lang=Serbo-Croatian; 	 python3 -X utf8 wordtree.py --wikiroots --sort --csv test/hr.csv --lang $lc $lang --freq freq/hr.xz	# Croatian
+# lc=bs;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=sh;       python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/bs.csv --lang $lc --freq freq/bs.xz	# Bosnian
+lc=sh;  	 python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/sr.csv --lang $lc --freq freq/sr.xz	# Serbian
+lc=sh;  	 python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/hr.csv --lang $lc --freq freq/hr.xz	# Croatian
 
-lc=si; lang=Sinhalese; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=sk; lang=Slovak; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=sl; lang=Slovenian; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=sq; lang=Albanian; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=sv; lang=Swedish; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=ta; lang=Tamil; 		python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=te; lang=Telugu; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=th; lang=Thai; 		python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=tl; lang=Tagalog; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=tr; lang=Turkish; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=uk; lang=Ukrainian; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=ur; lang=Urdu; 		python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=vi; lang=Vietnamese; python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
-lc=zh; lang=Chinese; 	python3 -X utf8 wordtree.py --wikiroots --sort --csv test/$lc.csv --lang $lc $lang
+lc=si;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=sk;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=sl;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=sq;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=sv;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=ta;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=te;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=th;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=tl;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=tr;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=uk;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=ur;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=vi;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc
+lc=zh;  	python3 -X utf8 wordtree.py --debug 1  --wikiroots --sort --csv test/$lc.csv --lang $lc

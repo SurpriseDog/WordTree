@@ -281,12 +281,13 @@ class Tree:
         print("Reading from file:", wiktionary_file)
         # todo update this number from most recent wiki dump
         expected = 200 * (os.path.getsize(wiktionary_file) / 1000)
-        print("\nThere should be an estimated", rns(expected), "lines of xml text to process.")
+        print("\nThere should be around", rns(expected * 0.9), 'to', rns(expected * 1.1), \
+        "lines of xml text to process.")
         print("Please wait a few minutes... You will only have to do this once per language:\n")
 
 
         progress = 0                # Track progress in file
-        update_rate = int(1e6)      # How often to display progress txt
+        update_rate = 10**(8 if self.debug else 6)      # How often to display progress txt
         root_dict = dict()          # word -> root_entry(word)
         entry = []                  # Entry for a noun
         all_words = set()           # Set of all words
