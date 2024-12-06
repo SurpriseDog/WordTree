@@ -1,27 +1,3 @@
-debug False 0.69557139207609
-debug False 0.890889632049948
-debug True 4.9596658665293365
-debug True 2.5544054749332474
-debug True 1.8512929392009263
-debug True 1.0818936997632012
-debug True 0.9114421759493051
-debug True 0.8143795026663921
-debug True 0.7765013862633041
-debug True 0.6936430066315491
-debug True 0.587110804247864
-debug True 0.43323095636031905
-debug True 0.41429189815877504
-debug True 0.39772022223242404
-debug True 0.33616828307740604
-debug True 0.310127078050283
-debug True 0.293555402123932
-debug True 0.22253393386814205
-debug True 0.22016655159294904
-debug True 0.196492728841019
-debug True 0.149145083337159
-debug True 0.12783864286042204
-debug False 12.674
-debug False 0.21806773100979626
 FPM:   Word:      Gender:
 1998   o          m -> f 
 266    mano       m -> f 
@@ -48,7 +24,5 @@ FPM:   Word:      Gender:
 0.196  rho        m -> f 
 0.149  autofoto   m -> f 
 0.128  contralto  m -> f 
-debug False 5.002
-debug False 0.49980007996801284
 
 Found 5K nouns of which 0.5% were rogues
