@@ -20,7 +20,7 @@ from storage import make_or_load_json, dump_json
 
 IS_WINDOWS = bool(os.name == 'nt')
 if IS_WINDOWS and sys.flags.utf8_mode == 0:
-    print("Windows users must run this program with: python3 -X utf8")
+    print("\n\nWindows users must run this program with: python3 -X utf8")
     sys.exit(1)
 
 
@@ -295,7 +295,7 @@ def user_word(text):
 
 def output_csv(ranked, ofile, book_freq):
     '''Ouput words as csv file.'''
-    with open(ofile, 'w') as csvfile:
+    with open(ofile, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow("Word Root FPM Total_FPM Book_Count".split())
         for word in ranked:
@@ -490,7 +490,7 @@ def rank_book(filename, tree, args):
     written = 0
     eprint("\n")
     ofile = os.path.basename(filename) + '.csv'
-    with open(ofile, 'w') as csvfile:
+    with open(ofile, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow("Word Count Book_FPM FPM Ratio Root Total_FPM".split())
 

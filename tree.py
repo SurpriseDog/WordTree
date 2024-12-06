@@ -97,10 +97,11 @@ def make_word_tree(roots):
     index = 0
 
 
+    print("\n")
     for word in roots.keys():
         index += 1
         if not index % 10000:
-            print("\n\nBuilding word tree:", rns(index), word)
+            print("Building word tree:", rns(index), word)
 
         def recurse(rword, seen=None, level=0):
             '''
@@ -279,7 +280,7 @@ class Tree:
         print("Building word database in", dbname)
         print("Reading from file:", wiktionary_file)
         # todo update this number from most recent wiki dump
-        expected = 256 * (os.path.getsize(wiktionary_file) / 1000)
+        expected = 200 * (os.path.getsize(wiktionary_file) / 1000)
         print("\nThere should be an estimated", rns(expected), "lines of xml text to process.")
         print("Please wait a few minutes... You will only have to do this once per language:\n")
 
@@ -288,7 +289,7 @@ class Tree:
         update_rate = int(1e6)      # How often to display progress txt
         root_dict = dict()          # word -> root_entry(word)
         entry = []                  # Entry for a noun
-        all_words = set()           # List of all words
+        all_words = set()           # Set of all words
         flag = False                # Start of requested language section in each entry
         out = []                    # Output ready to be synced with database
         found = 0                   # Total entries found
