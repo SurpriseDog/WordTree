@@ -274,12 +274,37 @@ class Tree:
         wiktionary_file = get_wiktionary_filename()
 
         def commit():
+            "Write buffer of entries to database"
+            nonlocal out
             cur.executemany("insert into words (word, entry) values (?, ?)", out)
             con.commit()
+            out = []
+
+        def add_word():
+            "Process a word and its entry. Return number of words added."
+            if entry:
+                word = strip_tags(title_line).replace('[', '').replace(']', '')
+                if word.startswith("Module:"):
+                    # Example: https://en.wiktionary.org/wiki/Module:en-headword
+                    print("Skipping:", word)
+                else:
+                    if word in all_words:
+                        print("Overwriting:", word)
+                    else:
+                        all_words.add(word)
+
+                    # Append entry to buffer
+                    out.append((word, '\n'.join(entry)))
+
+                    # Process tags from entry
+                    tags = self.root_entry(entry)
+                    if tags:
+                        root_dict[word] = tags
+                    return 1
+            return 0
 
         print("Building word database in", dbname)
         print("Reading from file:", wiktionary_file)
-        # todo update this number from most recent wiki dump
         expected = 200 * (os.path.getsize(wiktionary_file) / 1000)
         print("\nThere should be around", rns(expected * 0.9), 'to', rns(expected * 1.1), \
         "lines of xml text to process.")
@@ -289,6 +314,7 @@ class Tree:
         progress = 0                # Track progress in file
         update_rate = 10**(8 if self.debug else 6)      # How often to display progress txt
         root_dict = dict()          # word -> root_entry(word)
+        title_line = ""             # Line of xml starting with <title>
         entry = []                  # Entry for a noun
         all_words = set()           # Set of all words
         flag = False                # Start of requested language section in each entry
@@ -309,29 +335,13 @@ class Tree:
                 # Look for title line
                 line = line.decode().strip()
                 if line.startswith("<title>"):
-                    if entry:
+                    # If a new title line is reached, then pull word and entry from the last section
+                    if add_word():
                         flag = False
-                        word = strip_tags(title_line).replace('[', '').replace(']', '')
-                        if word.startswith("Module:"):
-                            # Example: https://en.wiktionary.org/wiki/Module:en-headword
-                            print("Skipping:", word)
-                        else:
-                            if word in all_words:
-                                print("Overwriting:", word)
-                            else:
-                                all_words.add(word)
-
-                            # Append entry to buffer and sync with database every so many entries
-                            found += 1
-                            out.append((word, '\n'.join(entry)))
-                            if len(out) >= 1e5:
-                                commit()
-                                out = []
-
-                            # Process tags from entry
-                            tags = self.root_entry(entry)
-                            if tags:
-                                root_dict[word] = tags
+                        found += 1
+                        # Sync with database every so many entries
+                        if len(out) >= 1e5:
+                            commit()
 
                     # Clear the entry for new title
                     entry = []
@@ -347,6 +357,7 @@ class Tree:
                 else:
                     if '==' + self.language + '==' in line:
                         flag = True
+            add_word()      # Don't forget that final entry
 
         commit()
         con.close()
