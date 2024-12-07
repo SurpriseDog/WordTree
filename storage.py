@@ -9,7 +9,6 @@ from time import perf_counter as tpc
 try:
     import ujson as json
 except ModuleNotFoundError:
-    print("ujson module not found, switching to json")
     import json
 
 from letters import eprint

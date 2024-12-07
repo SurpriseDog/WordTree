@@ -312,22 +312,26 @@ class Tree:
                     if entry:
                         flag = False
                         word = strip_tags(title_line).replace('[', '').replace(']', '')
-                        if word in all_words:
-                            print("Overwriting:", word)
+                        if word.startswith("Module:"):
+                            # Example: https://en.wiktionary.org/wiki/Module:en-headword
+                            print("Skipping:", word)
                         else:
-                            all_words.add(word)
+                            if word in all_words:
+                                print("Overwriting:", word)
+                            else:
+                                all_words.add(word)
 
-                        # Append entry to buffer and sync with database every so many entries
-                        found += 1
-                        out.append((word, '\n'.join(entry)))
-                        if len(out) >= 1e5:
-                            commit()
-                            out = []
+                            # Append entry to buffer and sync with database every so many entries
+                            found += 1
+                            out.append((word, '\n'.join(entry)))
+                            if len(out) >= 1e5:
+                                commit()
+                                out = []
 
-                        # Process tags from entry
-                        tags = self.root_entry(entry)
-                        if tags:
-                            root_dict[word] = tags
+                            # Process tags from entry
+                            tags = self.root_entry(entry)
+                            if tags:
+                                root_dict[word] = tags
 
                     # Clear the entry for new title
                     entry = []
