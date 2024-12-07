@@ -685,8 +685,8 @@ def main():
 if __name__ == "__main__":
     os.chdir(sys.path[0])       # change to local dir
     if '-lang' not in ' '.join(sys.argv[:]).lower():
-        print("Language set to default: es Spanish")
-        print("Use --lang to change\n")
+        print("Language set to the default: English")
+        print("Use --lang to change language\n")
 
     if not os.access('.', os.W_OK):
         print("Directory", os.getcwd(), "must be writable to store a cached version of the wikitionary database.")

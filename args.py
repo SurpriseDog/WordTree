@@ -239,11 +239,123 @@ def guess_anki(path):
     return path
 
 
+
+
 def guess_lang(code):
     "Look at language code or language name and attempt to guess the pair"
 
     langcodes = {'ar': 'Arabic', 'bg': 'Bulgarian', 'bn': 'Bengali', 'br': 'Breton', 'ca': 'Catalan', 'cs': 'Czech', 'da': 'Danish', 'de': 'German', 'el': 'Greek', 'en': 'English', 'eo': 'Esperanto', 'es': 'Spanish', 'et': 'Estonian', 'eu': 'Basque', 'fa': 'Persian', 'fi': 'Finnish', 'fr': 'French', 'gl': 'Galician', 'he': 'Hebrew', 'hi': 'Hindi', 'hu': 'Hungarian', 'hy': 'Armenian', 'id': 'Indonesian', 'it': 'Italian', 'ja': 'Japanese', 'ka': 'Georgian', 'kk': 'Kazakh', 'ko': 'Korean', 'lv': 'Latvian', 'mk': 'Macedonian', 'ml': 'Malayalam', 'nl': 'Dutch', 'no': 'Norwegian', 'pl': 'Polish', 'pt': 'Portuguese', 'ro': 'Romanian', 'ru': 'Russian', 'sh': 'Serbo-Croatian', 'si': 'Sinhalese', 'sk': 'Slovak', 'sl': 'Slovenian', 'sq': 'Albanian', 'sv': 'Swedish', 'ta': 'Tamil', 'te': 'Telugu', 'th': 'Thai', 'tl': 'Tagalog', 'tr': 'Turkish', 'uk': 'Ukrainian', 'ur': 'Urdu', 'vi': 'Vietnamese', 'zh': 'Chinese'} # pylint: disable=line-too-long
     langnames = {val: key for key, val in langcodes.items()}
+
+
+    # Spelling corrections
+    spelling = dict(\
+    Albanain="Albanian",\
+    Aribic="Arabic",\
+    Armenain="Armenian",\
+    Basc="Basque",\
+    Bengali="Bengali",\
+    Bretonn="Breton",\
+    Bulgarain="Bulgarian",\
+    Catalon="Catalan",\
+    Chineese="Chinese",\
+    Czeck="Czech",\
+    Dansih="Danish",\
+    Duth="Dutch",\
+    Englsh="English",\
+    Espernato="Esperanto",\
+    Eestonian="Estonian",\
+    Finsih="Finnish",\
+    Franch="French",\
+    Gallacian="Galician",\
+    Georgain="Georgian",\
+    Greman="German",\
+    Greeek="Greek",\
+    Hebru="Hebrew",\
+    Hindhi="Hindi",\
+    Hungarain="Hungarian",\
+    Indonision="Indonesian",\
+    Italien="Italian",\
+    Japaneese="Japanese",\
+    Kazack="Kazakh",\
+    Koren="Korean",\
+    Latvion="Latvian",\
+    Macedonain="Macedonian",\
+    Malyalam="Malayalam",\
+    Norwiegian="Norwegian",\
+    Persain="Persian",\
+    Polnish="Polish",\
+    Portugeese="Portuguese",\
+    Roumanian="Romanian",\
+    Rusian="Russian",\
+    SerboCroation="Serbo-Croatian",\
+    Sinhalaese="Sinhalese",\
+    Slovack="Slovak",\
+    Slovenean="Slovenian",\
+    Spannish="Spanish",\
+    Sweedish="Swedish",\
+    Tgalog="Tagalog",\
+    Tammil="Tamil",\
+    Telagu="Telugu",\
+    Thia="Thai",\
+    Turkesh="Turkish",\
+    Ukranian="Ukrainian",\
+    Urdoo="Urdu",\
+    Veitnamese="Vietnamese",\
+    Albenian="Albanian",\
+    Aribian="Arabic",\
+    Arminian="Armenian",\
+    Basq="Basque",\
+    Bangali="Bengali",\
+    Bretton="Breton",\
+    Bulgerian="Bulgarian",\
+    Catelan="Catalan",\
+    Chinnese="Chinese",\
+    Check="Czech",\
+    Dainsih="Danish",\
+    Duch="Dutch",\
+    Englesh="English",\
+    Esparanto="Esperanto",\
+    Estonian="Estonian",\
+    Finesh="Finnish",\
+    Frensh="French",\
+    Galeecian="Galician",\
+    Georgean="Georgian",\
+    Germaan="German",\
+    Griek="Greek",\
+    Hebrow="Hebrew",\
+    Hindie="Hindi",\
+    Hungarian="Hungarian",\
+    Indonessian="Indonesian",\
+    Itallian="Italian",\
+    Japaneze="Japanese",\
+    Kazah="Kazakh",\
+    Korian="Korean",\
+    Latvian="Latvian",\
+    Macedonian="Macedonian",\
+    Malyayalam="Malayalam",\
+    Norveigan="Norwegian",\
+    Persian="Persian",\
+    Polisch="Polish",\
+    Portugues="Portuguese",\
+    Rumainian="Romanian",\
+    Russan="Russian",\
+    SerboKroatian="Serbo-Croatian",\
+    Sinhallese="Sinhalese",\
+    Slovac="Slovak",\
+    Slovinian="Slovenian",\
+    Spannisch="Spanish",\
+    Sweadish="Swedish",\
+    Taggalog="Tagalog",\
+    Tamill="Tamil",\
+    Telgugu="Telugu",\
+    Thay="Thai",\
+    Turqish="Turkish",\
+    Ukrainien="Ukrainian",\
+    Ordu="Urdu",\
+    Vietnamse="Vietnamese",\
+    )
+
 
 
     # code -> language
@@ -252,10 +364,13 @@ def guess_lang(code):
         return [code, langcodes[code]]
 
     lang = code.title()
+    # Fix spelling
+    if lang in spelling:
+        lang = spelling[lang]
     if lang in langnames:
         return [langnames[lang], lang]
 
-    print("Error: Unknown language:", code)
+    print("Unknown language:", code)
     print("If this is a real language that's not in my list you can try typing --lang <code> <name>")
     print("For example: --lang en English")
 
