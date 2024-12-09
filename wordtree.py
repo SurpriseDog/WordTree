@@ -12,7 +12,7 @@ from time import perf_counter as tpc
 import myanki
 from sd.common import rns
 from sd.columns import auto_columns
-from args import parse_args
+from args import parse_args, LANGCODES
 from letters import strip_punct, COMMON_SYMBOLS, eprint
 from tree import Tree, fmt_fpm, loading, show_fpm
 from storage import make_or_load_json, dump_json
@@ -681,6 +681,41 @@ def main():
     return True
 
 
+def testall():
+    "Test all the languages and rebuild their cache."
+    all_cmds = []
+    os.makedirs('test', exist_ok=True)
+    print("All commands to be tested:")
+
+    def make_cmd(lang, out=None, freq=None):
+        base = "wordtree.py --debug 3  --wikiroots --sort".split()
+        if not out:
+            out = lang
+        cmd = base + ['--csv', os.path.join('test', out + '.csv'), '--lang', lang]
+        if freq:
+            cmd += ['--freq', os.path.join('freq', freq + '.xz')]
+        print(' '.join(cmd))
+        all_cmds.append(cmd)
+
+    # Standard languages
+    for lang in sorted(LANGCODES.keys()):
+        make_cmd(lang)
+
+    # Serbo-Croation languages use code sh:
+    # https://en.wikipedia.org/wiki/Serbo-Croatian
+    for lang in 'bs sr hr'.split():
+        make_cmd('sh', out=lang, freq=lang)
+
+    # Run test
+    for cmd in all_cmds:
+        print('\n'*4)
+        print("Testing with command:", cmd)
+        sys.argv = cmd
+        start = tpc()
+        if not main():
+            sys.exit(1)
+        print('Total time:', rns((tpc() - start) / 60), 'minutes')
+
 
 if __name__ == "__main__":
     os.chdir(sys.path[0])       # change to local dir
@@ -691,5 +726,8 @@ if __name__ == "__main__":
     if not os.access('.', os.W_OK):
         print("Directory", os.getcwd(), "must be writable to store a cached version of the wikitionary database.")
         sys.exit(1)
-    # Scan frequency table into memory (no advantage to json caching)
-    sys.exit(not main())
+
+    if '--testall' in sys.argv:
+        testall()
+    else:
+        sys.exit(not main())

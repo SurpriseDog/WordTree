@@ -9,6 +9,8 @@ from letters import eprint
 from sd.easy_args import ArgMaster
 
 
+LANGCODES = {'ar': 'Arabic', 'bg': 'Bulgarian', 'bn': 'Bengali', 'br': 'Breton', 'ca': 'Catalan', 'cs': 'Czech', 'da': 'Danish', 'de': 'German', 'el': 'Greek', 'en': 'English', 'eo': 'Esperanto', 'es': 'Spanish', 'et': 'Estonian', 'eu': 'Basque', 'fa': 'Persian', 'fi': 'Finnish', 'fr': 'French', 'gl': 'Galician', 'he': 'Hebrew', 'hi': 'Hindi', 'hu': 'Hungarian', 'hy': 'Armenian', 'id': 'Indonesian', 'it': 'Italian', 'ja': 'Japanese', 'ka': 'Georgian', 'kk': 'Kazakh', 'ko': 'Korean', 'lv': 'Latvian', 'mk': 'Macedonian', 'ml': 'Malayalam', 'nl': 'Dutch', 'no': 'Norwegian', 'pl': 'Polish', 'pt': 'Portuguese', 'ro': 'Romanian', 'ru': 'Russian', 'sh': 'Serbo-Croatian', 'si': 'Sinhalese', 'sk': 'Slovak', 'sl': 'Slovenian', 'sq': 'Albanian', 'sv': 'Swedish', 'ta': 'Tamil', 'te': 'Telugu', 'th': 'Thai', 'tl': 'Tagalog', 'tr': 'Turkish', 'uk': 'Ukrainian', 'ur': 'Urdu', 'vi': 'Vietnamese', 'zh': 'Chinese'} # pylint: disable=line-too-long
+
 def parse_args():
     "Parse arguments"
 
@@ -22,10 +24,11 @@ def parse_args():
 
     language = [\
     ['lang', '', list, ('en', 'English')],
-    '''Language code or name. For example: --lang es or --lang Spanish
-    will show you Spanish words. --lang English will show you English words.
-    The program will try to guess the correct language name from the code or code from the name, but you can also type the full name if something goes wrong like: --lang en English
-    Go to https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes to look up your language code.
+    '''Language code or name.
+    For example: --lang es or --lang Spanish will show you Spanish words.
+    For more control, you can type the full set of language code + name like this:
+    --lang <2 digit code> <language name>
+    If you are typing the full set, then the language code and name must EXACTLY match the words used in Wiktionary or it won't detect the entries. For example, --lang sk Slovak will give you the Slovak language, but --lang sk Slovakian won't find anything. Go to https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes to look up your language code and name.
     ''',
     ]
 
@@ -117,6 +120,8 @@ def parse_args():
     "Number of words to search in the anki question field.",
     ]
 
+
+    # debug level 3 will rebuild caches
     hidden = [\
     ['debug', '', int, 0],
     ]
@@ -244,8 +249,7 @@ def guess_anki(path):
 def guess_lang(code):
     "Look at language code or language name and attempt to guess the pair"
 
-    langcodes = {'ar': 'Arabic', 'bg': 'Bulgarian', 'bn': 'Bengali', 'br': 'Breton', 'ca': 'Catalan', 'cs': 'Czech', 'da': 'Danish', 'de': 'German', 'el': 'Greek', 'en': 'English', 'eo': 'Esperanto', 'es': 'Spanish', 'et': 'Estonian', 'eu': 'Basque', 'fa': 'Persian', 'fi': 'Finnish', 'fr': 'French', 'gl': 'Galician', 'he': 'Hebrew', 'hi': 'Hindi', 'hu': 'Hungarian', 'hy': 'Armenian', 'id': 'Indonesian', 'it': 'Italian', 'ja': 'Japanese', 'ka': 'Georgian', 'kk': 'Kazakh', 'ko': 'Korean', 'lv': 'Latvian', 'mk': 'Macedonian', 'ml': 'Malayalam', 'nl': 'Dutch', 'no': 'Norwegian', 'pl': 'Polish', 'pt': 'Portuguese', 'ro': 'Romanian', 'ru': 'Russian', 'sh': 'Serbo-Croatian', 'si': 'Sinhalese', 'sk': 'Slovak', 'sl': 'Slovenian', 'sq': 'Albanian', 'sv': 'Swedish', 'ta': 'Tamil', 'te': 'Telugu', 'th': 'Thai', 'tl': 'Tagalog', 'tr': 'Turkish', 'uk': 'Ukrainian', 'ur': 'Urdu', 'vi': 'Vietnamese', 'zh': 'Chinese'} # pylint: disable=line-too-long
-    langnames = {val: key for key, val in langcodes.items()}
+    langnames = {val: key for key, val in LANGCODES.items()}
 
 
     # Spelling corrections
@@ -360,8 +364,8 @@ def guess_lang(code):
 
     # code -> language
     code = code.lower().strip()
-    if code in langcodes:
-        return [code, langcodes[code]]
+    if code in LANGCODES:
+        return [code, LANGCODES[code]]
 
     lang = code.title()
     # Fix spelling
@@ -375,7 +379,7 @@ def guess_lang(code):
     print("For example: --lang en English")
 
     print("\nThese are the current languages I know about:")
-    print(' '.join(sorted(langcodes.values())))
+    print(' '.join(sorted(LANGCODES.values())))
     return False
 
 

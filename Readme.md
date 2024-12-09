@@ -4,9 +4,8 @@
  1. Download the Wiktionary dump and put it in the same directory as wordtree.py
    - Link: https://dumps.wikimedia.org/enwiktionary/latest/enwiktionary-latest-pages-articles-multistream.xml.bz2
    - Warning! This is a BIG file ≈ 2GB
- 2. Choose your language and run with: wordtree.py --lang (abbreviation) (language name)
-   - For example to select Spanish you would run the program with: `wordtree.py --lang es Spanish`
-   - The 2 digit lang code must match the language. You can look up additional [language codes here](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes)
+ 2. Choose your language and run with: wordtree.py --lang (language name)
+   - For example to select Spanish you would run the program with: `wordtree.py --lang Spanish`
    - The first run will take many minutes to scan the entire 2 gigabyte Wiktionary dump file and process it into a sqlite3 database inside of the cache folder. After that, the program will start in a few seconds every time, unless you run it with a different language code.
 
 
@@ -28,7 +27,7 @@ In the meantime, here are some common ways to use it:
 **Manual mode**
 
  * You can input individual words by just running `wordtree.py` in the terminal
- * It will attempt to autocorrect words missing diacritics. For example, it will convert organico to orgánico or tamano to tamaño. (Requires: python3 -m pip install unidecode)
+ * It will attempt to autocorrect words missing diacritics. For example, it will convert organico to orgánico or tamano to tamaño.
 
 ![Example usage](example1.png)
 

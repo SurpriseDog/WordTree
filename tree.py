@@ -68,8 +68,6 @@ def make_freq_table(filename):
             count = int(line[1].replace(',', ''))
             total += count
             freq_table[word] = count
-        # if not total % 1000:
-        #   print(total)
 
     f.close()
 
@@ -275,18 +273,18 @@ class Tree:
 
         def commit():
             "Write buffer of entries to database"
-            nonlocal out
             cur.executemany("insert into words (word, entry) values (?, ?)", out)
             con.commit()
-            out = []
+
 
         def add_word():
-            "Process a word and its entry. Return number of words added."
+            "Process a word and its entry."
             if entry:
                 word = strip_tags(title_line).replace('[', '').replace(']', '')
-                if word.startswith("Module:"):
+                if ':' in word:
                     # Example: https://en.wiktionary.org/wiki/Module:en-headword
-                    print("Skipping:", word)
+                    if self.debug:
+                        print("Skipping:", word)
                 else:
                     if word in all_words:
                         print("Overwriting:", word)
@@ -300,68 +298,104 @@ class Tree:
                     tags = self.root_entry(entry)
                     if tags:
                         root_dict[word] = tags
-                    return 1
-            return 0
 
         print("Building word database in", dbname)
         print("Reading from file:", wiktionary_file)
-        expected = 200 * (os.path.getsize(wiktionary_file) / 1000)
-        print("\nThere should be around", rns(expected * 0.9), 'to', rns(expected * 1.1), \
-        "lines of xml text to process.")
+        expected = 200 * (os.path.getsize(wiktionary_file) / 1000)      # Lines per KB
+        print("\nThere should be around", rns(round(expected * 0.8, -7)), 'to', rns(round(expected * 1.2, -7)), \
+        "lines of xml text to process.")        # Rounded to the nearest 10 million lines
         print("Please wait a few minutes... You will only have to do this once per language:\n")
 
 
         progress = 0                # Track progress in file
-        update_rate = 10**(8 if self.debug else 6)      # How often to display progress txt
+        update_rate = 10**6         # How often to display progress txt
         root_dict = dict()          # word -> root_entry(word)
         title_line = ""             # Line of xml starting with <title>
         entry = []                  # Entry for a noun
         all_words = set()           # Set of all words
-        flag = False                # Start of requested language section in each entry
         out = []                    # Output ready to be synced with database
-        found = 0                   # Total entries found
-        start = tpc()               # Start time
+
+        sec_flag = False            # Start of requested language section in each entry
+        sec_search = '==' + self.language + '=='
+
+        debug_flag = self.debug     # For debugging
+        debug_history = []          # Full list of lines between <title> without processing
+        rep_flag = False            # Repeated language section
 
 
         # Read the bz2 file and process into sqlite database
+        # Note: for testing use: pv enwiktionary* | pbzip2 -d | grep -B1000 -A100 "search term"
         with bz2.open(wiktionary_file) as f:
-            for line in f:
-                progress += 1
+            for progress, line in enumerate(f):
                 if not progress % update_rate:
-                    print('Read', rns(progress), 'lines at a rate of', rns(progress / (tpc() - start)), \
-                    'lines per second.', 'Found', rns(found), 'entries so far...')
+                    if progress == 0:
+                        start = tpc()       # Start time is more accurate if it reads a line first to get things going
+                    elif (debug_flag and (progress == 4 * update_rate or not progress % (update_rate * 100))) or \
+                    not debug_flag:
+                        print('Read', rns(progress), 'lines at a rate of', rns(progress / (tpc() - start)), \
+                        'lines per second.', 'Found', rns(len(all_words)), 'entries so far...')
+                if debug_flag:
+                    debug_history.append(line)
 
-
-                # Look for title line
                 line = line.decode().strip()
-                if line.startswith("<title>"):
-                    # If a new title line is reached, then pull word and entry from the last section
-                    if add_word():
-                        flag = False
-                        found += 1
-                        # Sync with database every so many entries
-                        if len(out) >= 1e5:
-                            commit()
+                if line.startswith("<comment>"):
+                    # Eliminates all of the Repeated language sections
+                    continue
 
-                    # Clear the entry for new title
-                    entry = []
-                    title_line = line       # From the last read title
+                # Look for title line to mark the start of a new entry
+                if line.startswith("<title>"):
+                    # Debug: show repeated entry
+                    if debug_flag:
+                        if rep_flag:
+                            rep_flag = False
+                            for l in debug_history[:-1]:
+                                print(l)
+                            print("\n"*3)
+                        debug_history = [debug_history[-1]]     # Reset debug_history
+
+                    sec_flag = False    # Sections only apply to the current entry
+                    add_word()      # If a new title line is reached, then pull word and entry from the last section
+                    # Sync with database every so many entries
+                    if len(out) >= 1e5:
+                        commit()
+                        out = []
+
+                    entry = []              # Clear the entry to get read for the new one
+                    title_line = line       # From the last line read title
 
                 # Only add requested language section to entry
-                if flag:
-                    if line.startswith('==') and '===' not in line:
-                        flag = False
+                if sec_flag:
+                    if line.count('==') == 2 and '===' not in line:
+                        # testing code: if '==' in line: did not improve speed
+                        if sec_search in line and ':' not in title_line:
+                            # This shouldn't happen. It indicates a repeated language section like in
+                            # the code for chavomadurismo
+                            if self.debug:
+                                print("Repeated language section:", title_line)
+                                rep_flag = True
+                        else:
+                            sec_flag = False
                     else:
                         if not line.startswith('<'):
                             entry.append(line)
-                else:
-                    if '==' + self.language + '==' in line:
-                        flag = True
-            add_word()      # Don't forget that final entry
+                        '''
+                        elif not ':' in title_line:
+                            # This shouldn't happen and when it does it's 100% nonsense
+                            for s in ('sha1 revision page'.split()):
+                                if s in line:
+                                    break
+                            else:
+                                print('<<<< ', line)
+                        '''
 
+                elif sec_search in line:
+                    # Must be "in" line because some sections start with xml tags
+                    sec_flag = True
+
+        add_word()      # Don't forget that final entry
         commit()
         con.close()
-        print("Read", f"{progress:,}", "lines in", rns((tpc() - start) / 60), 'minutes')
+        print("Read", f"{progress + 1:,}", "lines in", rns((tpc() - start) / 60), 'minutes')
         print("Averaged", rint(progress / (os.path.getsize(wiktionary_file) / 1000)), 'lines per KB')
 
         return root_dict
@@ -376,7 +410,7 @@ class Tree:
 
 
         # The meta file stores current state
-        if os.path.exists(meta_file):
+        if os.path.exists(meta_file) and self.debug < 3:
             meta = load_json(meta_file)
 
         else:
@@ -405,7 +439,7 @@ class Tree:
 
 
         # Make the word tree associating words and roots
-        if not meta['tree_finished'] or self.debug >= 3:
+        if not meta['tree_finished']:
             roots = load_json(roots_file)
             word_tree, reverse_tree = make_word_tree(roots)
 
@@ -439,6 +473,7 @@ class Tree:
         print_elapsed(start)
 
         return word_tree, reverse_tree
+
 
     def find_root(self, word, silent=False):
         '''Find the best root of a word'''
