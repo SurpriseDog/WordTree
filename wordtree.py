@@ -688,6 +688,16 @@ def testall():
     all_cmds = []
     os.makedirs('test', exist_ok=True)
     print("All commands to be tested:")
+    extra = []
+    for item in sys.argv[1:]:
+        if not '-testall' in item:
+            extra.append(item)
+    if extra:
+        print('Extra command options:', extra)
+        print('Press enter to continue.')
+        input()
+
+
 
     def make_cmd(lang, out=None, freq=None):
         base = "wordtree.py --debug 3  --wikiroots --sort".split()
@@ -696,6 +706,7 @@ def testall():
         cmd = base + ['--csv', os.path.join('test', out + '.csv'), '--lang', lang]
         if freq:
             cmd += ['--freq', os.path.join('freq', freq + '.xz')]
+        cmd += extra
         print(' '.join(cmd))
         all_cmds.append(cmd)
 

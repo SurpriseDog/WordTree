@@ -9,7 +9,7 @@ from letters import eprint
 from sd.easy_args import ArgMaster
 
 
-LANGCODES = {'ar': 'Arabic', 'bg': 'Bulgarian', 'bn': 'Bengali', 'br': 'Breton', 'ca': 'Catalan', 'cs': 'Czech', 'da': 'Danish', 'de': 'German', 'el': 'Greek', 'en': 'English', 'eo': 'Esperanto', 'es': 'Spanish', 'et': 'Estonian', 'eu': 'Basque', 'fa': 'Persian', 'fi': 'Finnish', 'fr': 'French', 'gl': 'Galician', 'he': 'Hebrew', 'hi': 'Hindi', 'hu': 'Hungarian', 'hy': 'Armenian', 'id': 'Indonesian', 'it': 'Italian', 'ja': 'Japanese', 'ka': 'Georgian', 'kk': 'Kazakh', 'ko': 'Korean', 'lv': 'Latvian', 'mk': 'Macedonian', 'ml': 'Malayalam', 'nl': 'Dutch', 'no': 'Norwegian', 'pl': 'Polish', 'pt': 'Portuguese', 'ro': 'Romanian', 'ru': 'Russian', 'sh': 'Serbo-Croatian', 'si': 'Sinhalese', 'sk': 'Slovak', 'sl': 'Slovenian', 'sq': 'Albanian', 'sv': 'Swedish', 'ta': 'Tamil', 'te': 'Telugu', 'th': 'Thai', 'tl': 'Tagalog', 'tr': 'Turkish', 'uk': 'Ukrainian', 'ur': 'Urdu', 'vi': 'Vietnamese', 'zh': 'Chinese'} # pylint: disable=line-too-long
+LANGCODES = {'ar': 'Arabic', 'bg': 'Bulgarian', 'bn': 'Bengali', 'br': 'Breton', 'ca': 'Catalan', 'cs': 'Czech', 'da': 'Danish', 'de': 'German', 'el': 'Greek', 'en': 'English', 'eo': 'Esperanto', 'es': 'Spanish', 'et': 'Estonian', 'eu': 'Basque', 'fa': 'Persian', 'fi': 'Finnish', 'fr': 'French', 'gl': 'Galician', 'he': 'Hebrew', 'hi': 'Hindi', 'hu': 'Hungarian', 'hy': 'Armenian', 'id': 'Indonesian', 'it': 'Italian', 'ja': 'Japanese', 'ka': 'Georgian', 'kk': 'Kazakh', 'ko': 'Korean', 'lv': 'Latvian', 'mk': 'Macedonian', 'ml': 'Malayalam', 'nl': 'Dutch', 'no': 'Norwegian', 'pl': 'Polish', 'pt': 'Portuguese', 'ro': 'Romanian', 'ru': 'Russian', 'sh': 'Serbo-Croatian', 'si': 'Sinhalese', 'sk': 'Slovak', 'sl': 'Slovene', 'sq': 'Albanian', 'sv': 'Swedish', 'ta': 'Tamil', 'te': 'Telugu', 'th': 'Thai', 'tl': 'Tagalog', 'tr': 'Turkish', 'uk': 'Ukrainian', 'ur': 'Urdu', 'vi': 'Vietnamese', 'zh': 'Chinese'} # pylint: disable=line-too-long
 
 def parse_args():
     "Parse arguments"
@@ -302,7 +302,7 @@ def guess_lang(code):
     SerboCroation="Serbo-Croatian",\
     Sinhalaese="Sinhalese",\
     Slovack="Slovak",\
-    Slovenean="Slovenian",\
+    Slovenean="Slovene",\
     Spannish="Spanish",\
     Sweedish="Swedish",\
     Tgalog="Tagalog",\
@@ -354,7 +354,8 @@ def guess_lang(code):
     SerboKroatian="Serbo-Croatian",\
     Sinhallese="Sinhalese",\
     Slovac="Slovak",\
-    Slovinian="Slovenian",\
+    Slovinian="Slovene",\
+    Slovenian="Slovene",\
     Spannisch="Spanish",\
     Sweadish="Swedish",\
     Taggalog="Tagalog",\
