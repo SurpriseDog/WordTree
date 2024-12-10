@@ -283,7 +283,7 @@ class Tree:
                 word = strip_tags(title_line).replace('[', '').replace(']', '')
                 if ':' in word:
                     # Example: https://en.wiktionary.org/wiki/Module:en-headword
-                    if self.debug:
+                    if debug_flag >= 4:
                         print("Skipping:", word)
                 else:
                     if word in all_words:

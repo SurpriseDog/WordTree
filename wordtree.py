@@ -683,6 +683,8 @@ def main():
 
 def testall():
     "Test all the languages and rebuild their cache."
+    # Todo upload caches directly so people can save download entire wiktionary dump
+    # Todo korean language dump is messed ups
     all_cmds = []
     os.makedirs('test', exist_ok=True)
     print("All commands to be tested:")

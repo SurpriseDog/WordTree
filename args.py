@@ -142,6 +142,9 @@ def parse_args():
 
     # Language codes
     args.lang = [arg.lower().strip() for arg in args.lang]
+    if not args.lang:
+        print("Please enter a language. For example: --lang English")
+        sys.exit(1)
     if args.lang[0] in ('bs', 'sr', 'hr'):
         print('''
         At last check, Wiktionary uses the code sh to refer to Serbo-Croatian languages.
@@ -201,7 +204,11 @@ def parse_args():
     if not args.freq:
         # Determine frequency file if not given
         if not args.wikifreq:
-            args.freq = os.path.join('freq', args.lang[0] + '.xz')
+            lang = args.lang[0]
+            if lang == 'sh':
+                lang = 'sr'
+                print("Defaulting to serbian frequency file.")
+            args.freq = os.path.join('freq', lang + '.xz')
         else:
             args.freq = os.path.join('wikifreq', args.lang[0] + '.xz')
         eprint("Using frequency file:", args.freq)
