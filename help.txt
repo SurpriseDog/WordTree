@@ -1,0 +1,28 @@
+#
+# This is help file for manual mode. For general help, see the readme file.
+#
+
+Type a word and press ENTER to see it's usage data.
+
+Afterwards, you can press ENTER again to see the words definition or you can type:
+
+	a to show all conjugations instead of skipping them
+	w to see the base word entry
+	q to quit
+
+
+	# Word History:
+		h to show the recent history of words entered
+		↑ (up arrow) to repeat a previous word entry
+			(press the key repeatedly to go back to an even older word)
+
+		d to delete the last line of history
+			(press the key repeatedly delete many lines of history)
+		d 'word' to delete that word from the history
+		
+		
+	# Debugging tools:
+		c to change --wikiclean setting
+		f to show detailed information about the frequency table
+		f <filename> to load a different frequency file and show stats about it.
+			(this will replace your current frequency table, but does not replace your dictionary)

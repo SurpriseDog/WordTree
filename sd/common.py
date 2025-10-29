@@ -12,7 +12,7 @@ def sig(num, digits=3, trailing=False):
     '''Return number formatted for significant digits
     trailing = True will enable trailing zeroes
     '''
-    # print('debug', trailing, num)
+    # print('debug sig', digits, trailing, num)
     num = float(num)
     if num == 0:
         if trailing:
@@ -28,7 +28,7 @@ def sig(num, digits=3, trailing=False):
 
     # Use the g method if possible, but fails for small numbers
     if num < 1:
-        out = ('{0:.' + str(digits+1) + 'g}').format(num)
+        out = ('{0:.' + str(digits) + 'g}').format(num)
     else:
         out = ('{0:.' + str(digits) + 'g}').format(num)
     if 'e' not in out:

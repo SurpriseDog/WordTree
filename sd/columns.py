@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 # Manipulate columns of text
+
+import sys
 from shutil import get_terminal_size
 
 def term_width():
@@ -68,10 +70,12 @@ def _just2func(just):
         raise ValueError("Cannot understand justification:", just)
 
 
-def print_columns(args, col_width=20, columns=None, just='left', space=0, wrap=True):
+def print_columns(args, col_width=20, columns=None, just='left', space=0, wrap=True, eprint=False):
     '''Print columns of col_width size.
     columns = manual list of column widths
     just = justification: left, right or center'''
+    
+    file = sys.stderr if eprint else sys.stdout
 
     if not columns:
         columns = [col_width] * len(args)
@@ -99,10 +103,10 @@ def print_columns(args, col_width=20, columns=None, just='left', space=0, wrap=T
                     extra[lineno][count] = line
 
         output += _just2func(just)(section, width)
-    print(output)
+    print(output, file=file)
 
     for line in extra:
-        print_columns(line, col_width, columns, just, space, wrap=False)
+        print_columns(line, col_width, columns, just, space, wrap=False, eprint=eprint)
 
 print_cols = print_columns  # pylint: disable=C0103
 
@@ -169,7 +173,7 @@ def _fit_in_width(col_width, max_width):
     return col_width
 
 
-def auto_columns(array, space=4, manual=None, printme=True, wrap=0, crop=None, just='left'):
+def auto_columns(array, space=4, manual=None, printme=True, wrap=0, crop=None, just='left', eprint=False):
     '''Automatically adjust column size
     Takes in a 2d array and prints it neatly
     space = spaces between columns
@@ -241,7 +245,7 @@ def auto_columns(array, space=4, manual=None, printme=True, wrap=0, crop=None, j
 
     if printme:
         for row in array:
-            print_columns(row, columns=col_width, space=0, just=just)
+            print_columns(row, columns=col_width, space=0, just=just, eprint=eprint)
         return None
     else:
         out = []
