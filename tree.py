@@ -99,7 +99,7 @@ def get_wiktionary_filename():
 	sys.exit(1)
 
 
-print('Found file:', get_wiktionary_filename()); sys.exit()	# testing
+# print('Found file:', get_wiktionary_filename()); sys.exit()	# testing
 
 
 def make_freq_table(filename, show_odds=True, extended=False):
