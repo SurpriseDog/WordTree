@@ -286,6 +286,7 @@ def parse_args():
 	args.ignore = apath(args.ignore)
 	args.dupes = apath(args.dupes)
 	args.csv = apath(args.csv)
+	os.chdir(sys.path[0])
 
 
 	# Verify arguments are correct
@@ -318,6 +319,8 @@ def check_args(args):
 		args.freq = choose_freq(args)
 		eprint("\nUsing frequency file:", args.freq)
 	if not os.path.exists(args.freq):
+		print(os.getcwd())
+		print(args.freq)
 		eprint("No frequency file found for language:", args.lang[0], 'at', args.freq)
 		return False
 		

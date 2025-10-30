@@ -7,6 +7,7 @@ import bz2
 import math
 import shutil
 import sqlite3
+import urllib.request
 
 import xml.etree.ElementTree as et
 from time import perf_counter as tpc
@@ -27,6 +28,34 @@ def strip_tags(text):
 	return et.tostring(tree, encoding='utf8', method='text').decode()
 
 
+def download_wiktionary():
+	url = "https://dumps.wikimedia.org/enwiktionary/latest/enwiktionary-latest-pages-articles-multistream.xml.bz2"
+	filename = url.split("/")[-1]
+
+	def progress(block_num, block_size, total_size):
+		downloaded = block_num * block_size
+		percent = downloaded / total_size * 100 if total_size > 0 else 0
+		end_char = "\r" if downloaded < total_size else "\n"
+		print(f"Downloading: {percent:6.2f}% ({downloaded/1024/1024:8.2f} MB / {total_size/1024/1024:8.2f} MB)", end=end_char, flush=True)
+
+	response = input("Download enwiktionary dump? (y/n): ").strip().lower()
+
+	if not response.startswith("y"):
+		print("Exiting.")
+		sys.exit(0)
+
+	print("Starting download...")
+
+	try:
+		urllib.request.urlretrieve(url, filename, reporthook=progress)
+		print(f"Download complete: {filename}")
+	except Exception as e:
+		print(f"Download failed: {e}")
+		sys.exit(1)
+		
+
+
+
 def get_wiktionary_filename():
 	# Find best bz2 file to read
 	matches = []
@@ -36,12 +65,42 @@ def get_wiktionary_filename():
 	if not matches:
 		eprint("Please place a wiktionary dump with a filename similar to:")
 		eprint("\tenwiktionary-20230601-pages-articles-multistream.xml.bz2 in the same directory as the program file.")
-		eprint("Link: https://dumps.wikimedia.org/enwiktionary/latest/enwiktionary-latest-pages-articles-multistream.xml.bz2") # pylint: disable=line-too-long
+		eprint("You can download it from this link:\n\thttps://dumps.wikimedia.org/enwiktionary/latest/enwiktionary-latest-pages-articles-multistream.xml.bz2") # pylint: disable=line-too-long
+		
+		if 'wordtree.py' in os.listdir('.'):
+			download_wiktionary()
+			return(get_wiktionary_filename())
+		
 		sys.exit(1)
 	matches.sort()
-	return matches[-1]
-
 	
+	
+	# Verify bz2 file
+	for filename in matches:
+		if os.path.getsize(filename) < 1e9:
+			eprint(filename, "is too small.")
+			eprint("I expected something larger than a gigabyte in size.")
+			continue
+
+		eprint("\nVerifying bz2 file:", filename)
+		try:
+			with bz2.open(filename, 'rb') as f:
+				chunk_size = 100 * 1024**2
+				total_read = 0
+				for chunk in iter(lambda: f.read(chunk_size), b''):
+					total_read += chunk_size
+					print(f"Verified: {total_read//1024**2} MB", end='\r', flush=True)
+		except Exception as e:
+			eprint(f"Error during decompression: {e}")
+			continue
+		return filename
+			
+	eprint("No viable wiktionary bz2 file found.")
+	sys.exit(1)
+
+
+print('Found file:', get_wiktionary_filename()); sys.exit()	# testing
+
 
 def make_freq_table(filename, show_odds=True, extended=False):
 	'''

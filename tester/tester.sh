@@ -38,9 +38,6 @@ sort -t, -k7,7nr out.roots.csv  | head
 title "Testing a selection of word roots from the English language. This will take awhile."
 ../wordtree.py --wikiroots --lang eng --dupes input.txt --stars --nosort --min 1 --max 10 | gzip > out.wikiroots.txt.gz
 
-title "Testing RAE list"
-echo -e "pistear\nq\n" | ../wordtree.py --rae --lang spanish
-
 
 title "Testing Arabic"
 echo -e "مرحبًا\nq\n" | ../wordtree.py --lang ar arabic
@@ -48,6 +45,10 @@ echo -e "مرحبًا\nq\n" | ../wordtree.py --lang ar arabic
 
 title "Testing a selection of word roots from the Arabic language."
 ../wordtree.py --wikiroots --lang arab --min 1 --max 10 |  gzip > out.arabic.txt.gz
+
+
+title "Testing RAE list. (Requires download)"
+echo -e "pistear\nq\n" | ../wordtree.py --rae --lang spanish
 
 
 title "Regenerating all language cache folders. This will take hours."
