@@ -75,6 +75,8 @@ def get_wiktionary_filename():
 	matches.sort()
 	
 	
+	verify_file = os.path.join(CACHE, 'wiktionary.verified.txt')
+	
 	# Verify bz2 file
 	for filename in matches:
 		if os.path.getsize(filename) < 1e9:
@@ -82,7 +84,20 @@ def get_wiktionary_filename():
 			eprint("I expected something larger than a gigabyte in size.")
 			continue
 
+
+		# --- Check for existing verification record ---
+		if os.path.isfile(verify_file):
+			with open(verify_file, "r", encoding="utf-8") as vf:
+				lines = vf.read().strip().splitlines()
+			if len(lines) >= 2:
+				saved_filename = lines[0].strip()
+				saved_size = int(lines[1].strip())
+				if saved_filename == filename and saved_size == os.path.getsize(filename):
+					print(f"Verification file found — {filename} already verified.")
+					return filename	
+					
 		eprint("\nVerifying bz2 file:", filename)
+		eprint("There should be at least 10GB of uncompressed data available.")
 		try:
 			with bz2.open(filename, 'rb') as f:
 				chunk_size = 100 * 1024**2
@@ -93,13 +108,18 @@ def get_wiktionary_filename():
 		except Exception as e:
 			eprint(f"Error during decompression: {e}")
 			continue
+					
+		size = os.path.getsize(filename)	
+		with open(verify_file, "w", encoding="utf-8") as vf:
+			vf.write(f"{filename}\n{size}\n")		
+			
 		return filename
 			
 	eprint("No viable wiktionary bz2 file found.")
 	sys.exit(1)
 
 
-# print('Found file:', get_wiktionary_filename()); sys.exit()	# testing
+# print('Found file:', get_wiktionary_filename()); sys.exit()	# testing todo undo!!
 
 
 def make_freq_table(filename, show_odds=True, extended=False):
